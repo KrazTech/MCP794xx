@@ -2,6 +2,11 @@
  Name:		MCP7940.cpp
  Created:	5/2/2018 11:39:58 PM
  Author:	Chris Krasnichuk
+ Description:
+	This file includes all of the function definitions for the MCP7940 library.
+	The intent is to keep the interaction with the RTC as simple and straight 
+	forwards as possible. Definitions can be found in the header file to simplfy
+	the use of the library and communication between the RTC.	
 */
 
 #include "MCP7940.h"
@@ -14,28 +19,36 @@ MCP7940::MCP7940() {
 	Serial.begin(115200);	// Can delete after debugged.
 	Wire.begin();			// Makes sure the I2C module is operating
 }
-
-// Starts the clock operation of the MCP7940.
 void MCP7940::start() {
 
-	byte config = readDataByte(0x00) | 0x80;
-
-	Wire.beginTransmission(_MCP7940address);			// transmit to RTC
-	Wire.write(_timeSecReg);							// Point to Register defined by Address
-	Wire.write(decToBcd(second) | config);				// Write data
-	Wire.endTransmission();								// stop transmitting
-
-}
-
-// Stops the clock operation of the MCP7940.
-void MCP7940::stop() {
-
-	byte config = readDataByte(0x00) & 0x7F;
+	byte config = readByte(0x00) | 0x80;
 
 	Wire.beginTransmission(_MCP7940address);			// transmit to RTC
 	Wire.write(_timeSecReg);							// Point to Register defined by Address
 	Wire.write(config);									// Write data
 	Wire.endTransmission();								// stop transmitting
+
+	setBattOn();										// Turn the battery on by default
+
+}
+void MCP7940::stop() {
+
+	byte config = readByte(0x00) & 0x7F;
+
+	Wire.beginTransmission(_MCP7940address);			// transmit to RTC
+	Wire.write(_timeSecReg);							// Point to Register defined by Address
+	Wire.write(config);									// Write data
+	Wire.endTransmission();								// stop transmitting
+}
+void MCP7940::setBattOn()
+{
+	byte buffer = readByte(_dateWeekdayReg) | 0x08;
+	writeByte(_dateWeekdayReg, buffer);
+}
+void MCP7940::setBattOff()
+{
+	byte buffer = readByte(_dateWeekdayReg) & 0xF7;
+	writeByte(_dateWeekdayReg, buffer);
 }
 void MCP7940::setHours12(int hour, bool _PM)
 {
@@ -86,7 +99,7 @@ void MCP7940::setTime24(int hour, int minute, int second)
 }
 void MCP7940::setYear(int year, bool leapYear)
 {
-	byte monthBuffer = readDataByte(_dateMonthReg);		// Read the month value to prevent byte corruption
+	byte monthBuffer = readByte(_dateMonthReg);		// Read the month value to prevent byte corruption
 	if (leapYear) {
 		monthBuffer |= 0x20;							// Set leap year bit
 	}
@@ -101,13 +114,13 @@ void MCP7940::setYear(int year, bool leapYear)
 }
 void MCP7940::setMonth(int month)
 {
-	byte monthBuffer = readDataByte(_dateMonthReg) & 0x20;	// Read the leap year bit to prevent bit corruption
+	byte monthBuffer = readByte(_dateMonthReg) & 0x20;	// Read the leap year bit to prevent bit corruption
 	Wire.beginTransmission(_MCP7940address);				// transmit to RTC
 	Wire.write(_dateMonthReg);								// Point to Register defined by Address
 	Wire.write(decToBcd(month) | monthBuffer);				// Write the month buffer with lear year bit
 	Wire.endTransmission();
 }
-void MCP7940::setDay(int day)
+void MCP7940::setDate(int day)
 {
 	Wire.beginTransmission(_MCP7940address);				// transmit to RTC
 	Wire.write(_dateDayReg);								// Point to Register defined by Address
@@ -121,7 +134,7 @@ void MCP7940::setWeekday(int weekday)
 	Wire.write(decToBcd(weekday) | 0x08);					// Write the weekday value and enabling batt. backup.
 	Wire.endTransmission();									// stop transmitting
 }
-void MCP7940::setDate(int year, bool leapYear, int month, int day)
+void MCP7940::setCalendar(int year, bool leapYear, int month, int day)
 {
 	Wire.beginTransmission(_MCP7940address);				// transmit to RTC
 	Wire.write(_dateDayReg);								// Point to Register defined by Address
@@ -185,7 +198,7 @@ int MCP7940::getMonth()
 {
 	return bcdToDec(readByte(_dateMonthReg) & 0x1F);
 }
-int MCP7940::getDay()
+int MCP7940::getDate()
 {
 	return bcdToDec(readByte(_dateDayReg));
 }
@@ -320,286 +333,154 @@ void MCP7940::setAlarmAll24(bool alarmSelect, int month, int date, int hours, in
 }
 void MCP7940::enableAlarm(bool alarmSelect)
 {
-
+	byte configBuff = readByte(_sysCtrlReg);
+	configBuff |= alarmSelect ? 0x20 : 0x10;
+	writeByte(_sysCtrlReg, configBuff);
 }
-
 void MCP7940::disableAlarm(bool alarmSelect)
 {
-
+	byte configBuff = readByte(_sysCtrlReg);
+	configBuff &= alarmSelect ? 0xDF : 0xEF;
+	writeByte(_sysCtrlReg, configBuff);
 }
-
 int MCP7940::getPwrDownHours()
 {
+	byte hourBuff = readByte(_pwrDnHourReg);
+	if (hourBuff & 0x40)
+	{
+		// 12 hour format
+		if (hourBuff & 0x20) PM = true;	// Set the PM class variable as true.
+		hourBuff &= 0x1F;				// Mask out right bits
+	}
+	else {
+		// 24 hour format
+		hourBuff &= 0x3F;				// Mask out the right bits
+	}
 
+	return bcdToDec(hourBuff);			// Return the value of the hour
 }
 int MCP7940::getPwrDownMinutes()
 {
-
-}
-int MCP7940::getPwrDownSeconds()
-{
-
+	return bcdToDec(readByte(_pwrDnMinReg));
 }
 int MCP7940::getPwrDownMonth()
 {
-
+	return bcdToDec(readByte(_pwrDnMonthReg) & 0x1F);
 }
-int MCP7940::getPwrDownDay()
+int MCP7940::getPwrDownDate()
 {
-
+	return bcdToDec(readByte(_pwrDnDateReg));
+}
+int MCP7940::getPwrDownWeekday()
+{
+	return bcdToDec(readByte(_pwrDnMonthReg) & 0xE0);
 }
 int MCP7940::getPwrUpHours()
 {
+	byte hourBuff = readByte(_pwrUpHourReg);
+	if (hourBuff & 0x40)
+	{
+		// 12 hour format
+		if (hourBuff & 0x20) PM = true;	// Set the PM class variable as true.
+		hourBuff &= 0x1F;				// Mask out right bits
+	}
+	else {
+		// 24 hour format
+		hourBuff &= 0x3F;				// Mask out the right bits
+	}
 
+	return bcdToDec(hourBuff);			// Return the value of the hour
 }
 int MCP7940::getPwrUpMinutes()
 {
-
-}
-int MCP7940::getPwrUpSeconds()
-{
-
+	return bcdToDec(readByte(_pwrUpMinReg));
 }
 int MCP7940::getPwrUpMonth()
 {
-
+	return bcdToDec(readByte(_pwrUpMonthReg) & 0x1F);
 }
-int MCP7940::getPwrUpDay()
+int MCP7940::getPwrUpDate()
 {
-
+	return bcdToDec(readByte(_pwrUpDateReg));
+}
+int MCP7940::getPwrUpWeekday()
+{
+	return bcdToDec(readByte(_pwrUpMonthReg) & 0xE0);
 }
 void MCP7940::setMFPin(bool value)
 {
+	byte configBuff = readByte(_sysCtrlReg);		// Read current configuration
+	configBuff &= 0x0F;
+	writeByte(_sysCtrlReg, configBuff | (value ? 0x80 : 0x00));
 
 }
-void MCP7940::setMFPinSquareWave(byte config)
+void MCP7940::setMFPinSquareWave(int selectOut)
 {
+	byte configBuff = readByte(_sysCtrlReg);		// Read current configuration
+	configBuff &= 0xBC;
 
+	switch (selectOut) {
+	case _1Hz:
+
+		// 1 Hz
+		configBuff |= 0x40;
+		break;
+
+	case _4kHz:
+
+		// 4.096 kHz
+		configBuff |= 0x41;
+		break;
+
+	case _8kHz:
+
+		// 8.192 kHz
+		configBuff |= 0x42;
+		break;
+	
+	case _32kHz:
+
+		// 32.768 kHz
+		configBuff |= 0x43;
+		break;
+	
+	default:
+		// Turns off the squarewave output
+		break;
+	}
+
+	writeByte(_sysCtrlReg, configBuff);
 }
-void MCP7940::attachInterrupt()
+void MCP7940::writeData(byte reg, byte* buffer, int numBytes)
 {
-
+	Wire.beginTransmission(_MCP7940address);			// transmit to RTC
+	Wire.write(reg);
+	for (int i = 0; i < numBytes;i++)
+	{
+		Wire.write(buffer[i]);
+		if ((reg + i) == _dat0x3F) break;				// Prevent an overflow condition 
+	}
+	Wire.endTransmission();								// stop transmitting
 }
-void MCP7940::detachInterrupt()
+byte MCP7940::readData(byte reg, byte* buffer, int numBytes)
 {
-
-}
-void MCP7940::writeData()
-{
-
-}
-byte MCP7940::readData()
-{
-
+	if (numBytes > 32)
+	{
+		for (int j = 0; j < (numBytes / 32); j++)
+		{
+			Wire.requestFrom(_MCP7940address, numBytes);
+			for (int i = 0; i < numBytes;i++)
+			{
+				buffer[(j * 32) + i] = Wire.read();
+				if ((reg + (j * 32) + i) >= _dat0x3F) break;				// Prevent an overflow condition 
+			}
+		}
+	}
+	Wire.endTransmission();								// stop transmitting
 }
 void MCP7940::standbyMode()
 {
 
-}
-
-void MCP7940::setTime(byte format, int hour, int minute, int second) {
-	
-	byte timeOn = (readDataByte(0x00) & 0x80) ? 1 : 0;
-	
-	Wire.beginTransmission(_MCP7940address);			// transmit to RTC
-	Wire.write(_timeSecReg);							// Point to Register defined by Address
-	Wire.write(decToBcd(second) & 0x7F);				// Write second register and turn time off
-	Wire.write(decToBcd(minute));						// Write the minute register
-	Wire.write(decToBcd(hour) | format);				// write the format and 
-	Wire.endTransmission();								// stop transmitting
-
-	if (timeOn) { start(); }							// Start the time again if it was on.
-
-}
-
-void MCP7940::setDate(bool leapYear, int year, int month, int day, int weekday)
-{
-	//byte timeOn = (readDataByte(0x00) & 0x80) ? 1 : 0;
-
-	Wire.beginTransmission(_MCP7940address);			// transmit to RTC
-	Wire.write(_dateWeekdayReg);						// Point to Register defined by Address
-	Wire.write(decToBcd(weekday));
-	Wire.write(decToBcd(day));
-	if (leapYear)
-	{
-		Wire.write(decToBcd(month) | 0x20);
-	}
-	else {
-		Wire.write(decToBcd(month));
-	}
-	
-	Wire.write(decToBcd(year));
-	Wire.endTransmission();								// stop transmitting
-}
-
-void MCP7940::readTime() {
-
-	byte format = readByte(0x02) & 0x40;		// Read the 12h/24h format bit.
-	byte hourReg = readByte(_timeHourReg);	
-
-	if ((hourReg & _timeFormatBit) == _24h)			// Check if 24h or 12h time format.
-	{
-		hour = bcdToDec(hourReg & 0x3F);			// Trasnfer hour
-		PM = NULL;
-	}
-	else {
-		PM = (hourReg & _PM) ? 1 : 0;				// Check if AM or PM
-		hour = bcdToDec(hourReg & 0x1F);			// Transfer hour
-	}
-
-	minute = bcdToDec(readDataByte(_timeMinReg));			// transfer minute
-	second = bcdToDec(readDataByte(_timeSecReg) & 0x7F);	// transfer seconds
-	
-}
-
-void MCP7940::readDate() {
-	
-	byte buffer = 0x00;
-
-	Wire.beginTransmission(_MCP7940address);   // transmit to RTC
-	Wire.write(_dateWeekdayReg);
-	Wire.endTransmission(false);
-
-	Wire.requestFrom(_MCP7940address, 4);
-
-	weekday = bcdToDec(Wire.read() & 0x07);
-	date = bcdToDec(Wire.read());
-	buffer = Wire.read();
-	month = bcdToDec(buffer & 0x1F);
-
-	(buffer & 0x20) ? leapYear = true : leapYear = false;
-	
-	year = bcdToDec(Wire.read());
-
-	Wire.endTransmission();
-}
-
-
-void MCP7940::setAlarmAll(byte alarm, int month, int day, int weekday, int hour, int minute, int second, byte PM)
-{
-	byte regBuffer = readDataByte(_sysCtrlReg) & B10001111; // Read Ctrl reg and clear alarm bits.
-	byte hourFormat = readDataByte(_timeHourReg) & _timeFormatBit;
-	
-	Wire.beginTransmission(_MCP7940address);	// Begin transmission
-	Wire.write(alarm);							// Point to Register defined by Address
-	Wire.write(decToBcd(second));               // Write seconds
-	Wire.write(decToBcd(minute));				// Write Minutes
-
-	if (hourFormat == _12h) 
-	{
-		Wire.write(decToBcd(hour) | PM);
-	}
-	else {
-		Wire.write(decToBcd(hour));					// Write hours
-	}	
-
-	Wire.write(decToBcd(weekday) | B01110000);	// Write Weekday, and set trigger for ALL
-	Wire.write(decToBcd(day));					// Write date
-	Wire.write(decToBcd(month));				// Write Month
-	Wire.endTransmission();						// Transmit mesage.
-
-	if (alarm == _ALARM1) {
-		writeData(_sysCtrlReg, regBuffer | _alarm1Bit);
-	}
-	else {
-		writeData(_sysCtrlReg, regBuffer | _alarm0Bit);
-	}
-	
-}
-void MCP7940::setAlarmWeekday(byte alarm, int weekday)
-{
-	byte regBuffer = readDataByte(_sysCtrlReg) & B10001111; // Read Ctrl reg and clear alarm bits.
-
-	byte writeBuffer = (decToBcd(weekday) & 0x03) | 0x30;
-
-	writeData(alarm + _alarmWeekdayReg, writeBuffer);  // Load match value and set alarm criteria
-
-	// Enable associated Alarm.
-	if (alarm == _ALARM1) {
-		writeData(_sysCtrlReg, regBuffer | _alarm1Bit);
-	}
-	else {
-		writeData(_sysCtrlReg, regBuffer | _alarm0Bit);
-	}
-}
-void MCP7940::setAlarmDate(byte alarm, int day)
-{
-	byte regBuffer = readDataByte(_sysCtrlReg) & B10001111; // Read Ctrl reg and clear alarm bits.
-
-	writeData(alarm + _alarmDateReg, decToBcd(day));		// Load Alarm time
-
-	writeData(alarm + _alarmWeekdayReg, 0x40);				// Set Format
-
-	if (alarm == _ALARM1) {
-		writeData(_sysCtrlReg, regBuffer | _alarm1Bit);
-	}
-	else {
-		writeData(_sysCtrlReg, regBuffer | _alarm0Bit);
-	}
-}
-void MCP7940::setAlarmHour(byte alarm, int hour, byte PM)
-{
-	byte regBuffer = readDataByte(_sysCtrlReg) & B10001111; // Read Ctrl reg and clear alarm bits.
-	byte hourFormat = readDataByte(_timeHourReg) & _timeFormatBit;
-
-
-	if (hourFormat == _12h)
-	{
-		writeData(alarm + _alarmHourReg, decToBcd(hour) | PM);
-	}
-	else {
-		writeData(alarm + _alarmHourReg, decToBcd(hour));				// Write hours
-	}
-
-	writeData(alarm + _alarmWeekdayReg, 0x20);				// Set Format
-
-	if (alarm == _ALARM1) {
-		writeData(_sysCtrlReg, regBuffer | _alarm1Bit);
-	}
-	else {
-		writeData(_sysCtrlReg, regBuffer | _alarm0Bit);
-	}
-}
-void MCP7940::setAlarmMinute(byte alarm, int minute)
-{
-	byte regBuffer = readDataByte(_sysCtrlReg) & B10001111; // Read Ctrl reg and clear alarm bits.
-
-	writeData(alarm + _alarmMinReg, decToBcd(minute));		// Load Alarm time
-
-	writeData(alarm + _alarmWeekdayReg, 0x10);				// Set Format
-
-	if (alarm == _ALARM1) {
-		writeData(_sysCtrlReg, regBuffer | _alarm1Bit);
-	}
-	else {
-		writeData(_sysCtrlReg, regBuffer | _alarm0Bit);
-	}
-}
-void MCP7940::setAlarmSecond(byte alarm, int second)
-{
-	byte regBuffer = readDataByte(_sysCtrlReg) & B10001111; // Read Ctrl reg and clear alarm bits.
-
-	writeData(alarm + _alarmSecReg, decToBcd(second));		// Load Alarm time
-
-	writeData(alarm + _alarmWeekdayReg, 0x00);				// Set Format
-
-	if (alarm == _ALARM1) {
-		writeData(_sysCtrlReg, regBuffer | _alarm1Bit);
-	}
-	else {
-		writeData(_sysCtrlReg, regBuffer | _alarm0Bit);
-	}
-}
-void MCP7940::disableAlarm(byte alarm)
-{
-	byte regBuffer = readDataByte(_sysCtrlReg); // Read Ctrl reg and clear alarm bits.
-
-	if (alarm == _ALARM1) {
-		writeData(_sysCtrlReg, regBuffer & (~_alarm1Bit));
-	}
-	else {
-		writeData(_sysCtrlReg, regBuffer & (~_alarm0Bit));
-	}
 }
 
 /////////////////////
@@ -613,7 +494,6 @@ void MCP7940::writeByte(byte address, byte data) {
 	Wire.endTransmission();         // stop transmitting
 	return;
 }
-
 byte MCP7940::readByte(byte address) {
 	byte data;
 
@@ -629,13 +509,11 @@ byte MCP7940::readByte(byte address) {
 
 	return data;
 }
-
 byte MCP7940::bcdToDec(byte bcd)
 {
 	
 	return(((bcd >> 4) * 10) + (bcd & 0xF));
 }
-
 byte MCP7940::decToBcd(byte val)
 {
 	return(((val / 10) << 4) | (val % 10));

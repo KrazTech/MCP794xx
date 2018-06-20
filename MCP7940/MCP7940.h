@@ -25,39 +25,118 @@
 #define _MCP7940address		0x6F
 
 // Register Definitations
-#define _timeSecReg			0x00
-#define _timeMinReg			0x01
-#define _timeHourReg		0x02
-#define _dateWeekdayReg		0x03
-#define _dateDayReg			0x04
-#define _dateMonthReg		0x05
-#define _dateYearReg		0x06
-#define _sysCtrlReg			0x07
-#define _sysOscTrimReg		0x08
-
-
-/*
 enum registers {
-	_timeSecReg = 0x00,
+	_timeSecReg,
 	_timeMinReg,
 	_timeHourReg,
 	_dateWeekdayReg,
 	_dateDayReg,
 	_dateMonthReg,
 	_dateYearReg,
-};*/
+	_sysCtrlReg,
+	_sysOscTrimReg,
+	_reserved0,
+	_alarm0SecReg,
+	_alarm0MinReg,
+	_alarm0HourReg,
+	_alarm0WeekdayReg,
+	_alarm0DateReg,
+	_alarm0MonthReg,
+	_reserved1,
+	_alarm1SecReg,
+	_alarm1MinReg,
+	_alarm1HourReg,
+	_alarm1WeekdayReg,
+	_alarm1DateReg,
+	_alarm1MonthReg,
+	_reserved2,
+	_pwrDnMinReg,
+	_pwrDnHourReg,
+	_pwrDnDateReg,
+	_pwrDnMonthReg,
+	_pwrUpMinReg,
+	_pwrUpHourReg,
+	_pwrUpDateReg,
+	_pwrUpMonthReg,
+	_dat0x00,
+	_dat0x01,
+	_dat0x02,
+	_dat0x03,
+	_dat0x04,
+	_dat0x05,
+	_dat0x06,
+	_dat0x07,
+	_dat0x08,
+	_dat0x09,
+	_dat0x0A,
+	_dat0x0B,
+	_dat0x0C,
+	_dat0x0D,
+	_dat0x0E,
+	_dat0x0F,
+	_dat0x10,
+	_dat0x11,
+	_dat0x12,
+	_dat0x13,
+	_dat0x14,
+	_dat0x15,
+	_dat0x16,
+	_dat0x17,
+	_dat0x18,
+	_dat0x19,
+	_dat0x1A,
+	_dat0x1B,
+	_dat0x1C,
+	_dat0x1D,
+	_dat0x1E,
+	_dat0x1F,
+	_dat0x20,
+	_dat0x21,
+	_dat0x22,
+	_dat0x23,
+	_dat0x24,
+	_dat0x25,
+	_dat0x26,
+	_dat0x27,
+	_dat0x28,
+	_dat0x29,
+	_dat0x2A,
+	_dat0x2B,
+	_dat0x2C,
+	_dat0x2D,
+	_dat0x2E,
+	_dat0x2F,
+	_dat0x30,
+	_dat0x31,
+	_dat0x32,
+	_dat0x33,
+	_dat0x34,
+	_dat0x35,
+	_dat0x36,
+	_dat0x37,
+	_dat0x38,
+	_dat0x39,
+	_dat0x3A,
+	_dat0x3B,
+	_dat0x3C,
+	_dat0x3D,
+	_dat0x3E,
+	_dat0x3F
+};
 
-// Alarm STUFF***
+// Alarm Base Registers
 #define _alarm0Reg			0x0A
 #define _alarm1Reg			0x11
 
 // Alarm Register OFFSETs
-#define _alarmSecReg		0x00
-#define _alarmMinReg		0x01
-#define _alarmHourReg		0x02
-#define _alarmWeekdayReg	0x03
-#define _alarmDateReg		0x04
-#define _alarmMonthReg		0x05
+enum alarmOffsets {
+		_alarmSecReg,
+		_alarmMinReg,
+		_alarmHourReg,
+		_alarmWeekdayReg,
+		_alarmDateReg,
+		_alarmMonthReg
+};
 
 // Register Mask Definitions
 #define _alarm1Bit			0x20
@@ -76,34 +155,53 @@ enum registers {
 #define _alarmMatchAll		0x70
 
 // Day/Month Definitions
-#define JAN				0x01
-#define FEB				0x02
-#define MAR				0x03
-#define APR				0x04
-#define MAY				0x05
-#define JUN				0x06
-#define JUL				0x07
-#define AUG				0x08
-#define SEPT			0x09
-#define OCT				0x10
-#define NOV				0x11
-#define DEC				0x12
+enum months {
+			_JAN,
+			_FEB,
+			_MAR,
+			_APR,
+			_MAY,
+			_JUN,
+			_JUL,
+			_AUG,
+			_SEPT,
+			_OCT,
+			_NOV,
+			_DEC
+};
 
-#define _MON				0x01
-#define _TUE				0x02
-#define _WED				0x03
-#define _THUR				0x04
-#define _FRI				0x05
-#define _SAT				0x06
-#define _SUN				0x07
+enum weekdays {
+	_MON,
+	_TUE,
+	_WED,
+	_THUR,
+	_FRI,
+	_SAT,
+	_SUN
+};
+
+// SquareWave Configuration definitions
+enum sqWaveConfig {
+	_32kHz,
+	_8kHz,
+	_4kHz,
+	_1Hz
+};
 
 
 class MCP7940 {
 public:
+
+	// Flags
+	bool PM = NULL;			// Signifies if the last getHours() call had a 12h result in the PM.
+	bool LPYR = NULL;		// Signifies if the last getYear() resulted in a leap year.
+
 	MCP7940();
 
 	void start();													// Activate the RTC Clock
 	void stop();													// Stop the RTC Clock
+	void setBattOn();
+	void setBattOff();
 	void setHours12(int hour, bool _PM);							// Set the hour in 12 Hour format
 	void setHours24(int hour);										// Set the hour in 24 Hour format
 	void setMinutes(int minute);									// Set the minutes
@@ -112,15 +210,15 @@ public:
 	void setTime24(int hour, int minute, int second);				// Set the time in 24 Hour format
 	void setYear(int year, bool leapYear);							// Set the year
 	void setMonth(int month);										// Set the month
-	void setDay(int day);											// Set the day of the month
+	void setDate(int day);											// Set the day of the month
 	void setWeekday(int weekday);									// Set the weekday (Monday, Tuesday, ...)
-	void setDate(int year, bool leapYear, int month, int day);		// Set the Date (Weekday must be set seperately)
+	void setCalendar(int year, bool leapYear, int month, int day);	// Set the Date (Weekday must be set seperately)
 	int getHours();													// Returns the hour (returns hour, for 12 hour format check PM variable)
 	int getMinutes();												// Returns the minute of the hour
 	int getSeconds();												// Returns the seconds of the minute
 	int getYear();													// Returns the year (Last 2 digits)
 	int getMonth();													// Returns the month
-	int getDay();													// Returns the day of the month
+	int getDate();													// Returns the day of the month
 	int getWeekday();												// Returns the weekday
 		
 	void setAlarmHours12(bool alarmSelect, int hours, bool _PM);	// Set alarm 0/1 to trigger on a match of hours 12 hour format
@@ -130,51 +228,28 @@ public:
 	void setAlarmWeekday(bool alarmSelect, int weekday);			// Set alarm 0/1 to trigger on a match of weekday
 	void setAlarmDay(bool alarmSelect, int day);					// Set alarm 0/1 to trigger on a match of day of the month
 	void setAlarmAll12(bool alarmSelect, int month, int date, int hours, bool _PM, int minutes, int seconds);		// Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
-	void setAlarmAll24(bool alarmSelect, int month, int date, int hours, int minutes, int seconds);		// Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
+	void setAlarmAll24(bool alarmSelect, int month, int date, int hours, int minutes, int seconds);					// Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
 	void enableAlarm(bool alarmSelect);								// Enable alarm 0/1
 	void disableAlarm(bool alarmSelect);							// Disable alarm 0/1
 
 	int getPwrDownHours();
 	int getPwrDownMinutes();
-	int getPwrDownSeconds();
 	int getPwrDownMonth();
-	int getPwrDownDay();
+	int getPwrDownDate();
+	int getPwrDownWeekday();
 
 	int getPwrUpHours();
 	int getPwrUpMinutes();
-	int getPwrUpSeconds();
 	int getPwrUpMonth();
-	int getPwrUpDay();
+	int getPwrUpDate();
+	int getPwrUpWeekday();
 
 	void setMFPin(bool value);										// Sets the value of the Multifunction pin, disables alarms
-	void setMFPinSquareWave(byte config);							// Configures the Multifunction pin to output a sqaure wave, disables alarms
+	void setMFPinSquareWave(int selectOut);							// Configures the Multifunction pin to output a sqaure wave, disables alarms
 
-	void attachInterrupt();											// Configures an interrupt routine to a pin for the alarm
-	void detachInterrupt();											// detaches an terrupt routine
-	void writeData();												// Write a byte of data to SRAM
-	byte readData();												// read a byte of data from SRAM
+	void writeData(byte reg, byte* buffer, int numBytes);												// Write a byte of data to SRAM
+	byte readData(byte reg, byte* buffer, int numBytes);												// read a byte of data from SRAM
 	void standbyMode();
-
-	void setTime(byte format, int hour, int minute, int second);
-	void setDate(bool leapYear, int year, int month, int day, int weekday);
-	void readTime();
-	void readDate();
-
-
-	void setAlarmAll(byte alarm, int month, int day, int weekday, int hour, int minute, int second, byte PM);
-	void setAlarmWeekday(byte alarm, int weekday);
-	void setAlarmDate(byte alarm, int day);
-	void setAlarmHour(byte alarm, int hour, byte PM);
-	void setAlarmMinute(byte alarm, int minute);
-	void setAlarmSecond(byte alarm, int second);
-
-	void disableAlarm(byte alarm);
-
-
-	// Variables
-	bool PM = NULL;
-	bool LPYR = NULL;
-
 
 private:
 	byte bcdToDec(byte bcd);
