@@ -5,7 +5,8 @@ The Kraztech MCP7940 Real Time Clock module is an easy to use full feature board
 
 ## Repository Contents
 
-**/MCP7940** - Library for the RTC Module
+**/Firmware**   - Example Arduino Sketch for the Module
+**/Library**    - Library for use with Arduinos
 
 ## Documentation
 
