@@ -589,7 +589,12 @@ byte MCP7940::readData(byte reg, byte* buffer, int numBytes)
 		}
 	}
 	else {
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Finish Logic Idiot.
+		Wire.requestFrom(_MCP7940address, numBytes);
+		for (int i = 0; i < numBytes;i++)
+		{
+			buffer[(j * 32) + i] = Wire.read();
+			if ((reg + (j * 32) + i) >= _dat0x3F) break;				// Prevent an overflow condition 
+		}
 	}
 	Wire.endTransmission();								// stop transmitting
 }
