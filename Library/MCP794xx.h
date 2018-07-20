@@ -177,7 +177,7 @@ enum alarmOffsets {
 
 // Day/Month Definitions
 enum months {
-	_JAN,
+	_JAN = 0x01,
 	_FEB,
 	_MAR,
 	_APR,

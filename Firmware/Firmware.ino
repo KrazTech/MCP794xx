@@ -17,17 +17,21 @@ MCP7940 rtc1;
 
 void setup() {
 
-
+	// Start Serial Communication
 	Serial.begin(115200);
+
+	// Run through setting the date and time.
 	rtc1.setHours12(11, false); // Set the time to 11 AM
 	rtc1.setMinutes(39);		// Set the minutes to 39
 	rtc1.setSeconds(45);		// Set the second to 45
-	rtc1.setYear(18, false);	// Set the year to 18, no leap year.
+	rtc1.setYear(18);			// Set the year to 18
 	rtc1.setMonth(_FEB);		// Set the Month
 	rtc1.setDate(23);			// Set the date (0-31)
 	rtc1.setWeekday(_THUR);		// Set the day of the week
 	rtc1.start();				// Turn on the clock, begins tracking time
 
+
+	// Read back the date and time.
 	Serial.print("Time: ");
 	Serial.print(rtc1.getHours());		// returns Hours in int format
 	Serial.print("h ");
@@ -54,7 +58,7 @@ void setup() {
 	Serial.print(rtc1.getYear());		// Returns the last two digits of the year
 	Serial.print("\n");
 
-	rtc1.setCalendar(55, true, 11, 1);	// Set the calendar with one function call
+	rtc1.setCalendar(55, _NOV, 1);		// Set the calendar with one function call
 
 	delay(1000);
 

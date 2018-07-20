@@ -40,6 +40,8 @@ void MCP7940::stop() {
 	Wire.write(_timeSecReg);							// Point to Register defined by Address
 	Wire.write(config);									// Write data
 	Wire.endTransmission();								// stop transmitting
+	while ((readByte(_dateWeekdayReg) & 0x20) != 0);	// Check and wait for the Osc to stop running
+
 }
 void MCP7940::setBattOn()
 {
@@ -53,6 +55,10 @@ void MCP7940::setBattOff()
 }
 void MCP7940::setHours12(int hour, bool _PM)
 {
+	// Conform Input values
+	if (hour > 12) hour = 12;
+	if (hour < 1) hour = 1;
+
 	//Errata Fix
 	byte config = readByte(0x00) & 0x7F;				// Read Config Data, Clear Run Bit
 	writeByte(_timeSecReg, config);						// Write the config data
@@ -63,7 +69,7 @@ void MCP7940::setHours12(int hour, bool _PM)
 	Wire.write(decToBcd(hour) | (_PM ? 0x60 : 0x40));	// write the format and 
 	Wire.endTransmission();								// stop transmitting
 
-														//Errata Fix
+	//Errata Fix
 	config = readByte(0x00) | 0x80;						// Read Config Data, Set Run Bit
 	writeByte(_timeSecReg, config);						// Write the config data
 	while ((readByte(_dateWeekdayReg) & 0x20) == 0);	// Check and wait for the Osc to start running
@@ -71,13 +77,26 @@ void MCP7940::setHours12(int hour, bool _PM)
 }
 void MCP7940::setHours24(int hour)
 {
+	// Conform input values
+	if (hour == 24 || hour < 0) {
+		hour = 0;
+	}
+	else if (hour > 23) {
+		hour = 23;
+	}
+	
 	Wire.beginTransmission(_MCP7940address);			// transmit to RTC
 	Wire.write(_timeHourReg);							// Point to Register defined by Address
-	Wire.write(decToBcd(hour) & 0xBF);					// write the format and 
+	Wire.write(decToBcd(hour) & 0xBF);					// write the Hour.
 	Wire.endTransmission();
 }
 void MCP7940::setMinutes(int minute)
 {
+
+	// Conform input values
+	if (minute > 59) minute = 59;
+	if (minute < 0) minute = 0;
+
 	Wire.beginTransmission(_MCP7940address);			// transmit to RTC
 	Wire.write(_timeMinReg);							// Point to Register defined by Address
 	Wire.write(decToBcd(minute));						// Write the minute register
@@ -85,6 +104,11 @@ void MCP7940::setMinutes(int minute)
 }
 void MCP7940::setSeconds(int second)
 {
+
+	// Conform Input values
+	if (second > 59) second = 59;
+	if (second < 0) second = 0;
+
 	Wire.beginTransmission(_MCP7940address);			// transmit to RTC
 	Wire.write(_timeSecReg);							// Point to Register defined by Address
 	Wire.write(decToBcd(second) & 0x7F);				// Write second register and turn time off
@@ -92,6 +116,14 @@ void MCP7940::setSeconds(int second)
 }
 void MCP7940::setTime12(int hour, bool _PM, int minute, int second)
 {
+	// Conform Input values
+	if (hour > 12) hour = 12;
+	if (hour < 1) hour = 1;
+	if (minute > 59) minute = 59;
+	if (minute < 0) minute = 0;
+	if (second > 59) second = 59;
+	if (second < 0) second = 0;
+
 	Wire.beginTransmission(_MCP7940address);			// transmit to RTC
 	Wire.write(_timeSecReg);							// Point to Register defined by Address
 	Wire.write(decToBcd(second) & 0x7F);				// Write second register and turn time off
@@ -101,6 +133,18 @@ void MCP7940::setTime12(int hour, bool _PM, int minute, int second)
 }
 void MCP7940::setTime24(int hour, int minute, int second)
 {
+	// Conform Input values
+	if (hour == 24 || hour < 0) {
+		hour = 0;
+	}
+	else if (hour > 23) {
+		hour = 23;
+	}
+	if (minute > 59) minute = 59;
+	if (minute < 0) minute = 0;
+	if (second > 59) second = 59;
+	if (second < 0) second = 0;
+
 	Wire.beginTransmission(_MCP7940address);			// transmit to RTC
 	Wire.write(_timeSecReg);							// Point to Register defined by Address
 	Wire.write(decToBcd(second) & 0x7F);				// Write second register and turn time off
@@ -110,23 +154,35 @@ void MCP7940::setTime24(int hour, int minute, int second)
 }
 void MCP7940::setYear(int year)
 {
-	byte monthBuffer = readByte(_dateMonthReg);		// Read the month value to prevent byte corruption
+	// Conform input values
+	if (year > 99) year = 99;
+	if (year < 0) year = 0;
+
 	Wire.beginTransmission(_MCP7940address);			// transmit to RTC
-	Wire.write(_dateMonthReg);							// Point to Register defined by Address
-	Wire.write(monthBuffer);							// Write the month buffer with lear year bit set
+	Wire.write(_dateYearReg);							// Point to Register defined by Address
 	Wire.write(decToBcd(year));							// Write the year
 	Wire.endTransmission();
 }
 void MCP7940::setMonth(int month)
 {
-	byte monthBuffer = readByte(_dateMonthReg) & 0x20;		// Read the leap year bit to prevent bit corruption
+	// Conform input to valid values.
+	if (month > _DEC) month = _DEC;
+	if (month < _JAN) month = _JAN;
+
+	byte dateBuffer = readByte(_dateDayReg);				// Read Date Register
 	Wire.beginTransmission(_MCP7940address);				// transmit to RTC
-	Wire.write(_dateMonthReg);								// Point to Register defined by Address
-	Wire.write(decToBcd(month) | monthBuffer);				// Write the month buffer with lear year bit
+	Wire.write(_dateDayReg);								// Point to Register defined by Address
+	Wire.write(dateBuffer);									// Rewrite Date register, Errata Fix.
+	Wire.write(decToBcd(month));							// Write the month buffer with lear year bit
 	Wire.endTransmission();
+
 }
 void MCP7940::setDate(int day)
 {
+	// Conform input values, here best we can do it prevent crazy dates from happening.
+	if (day > 31) day = 31;
+	if (day < 1) day = 1;
+
 	Wire.beginTransmission(_MCP7940address);				// transmit to RTC
 	Wire.write(_dateDayReg);								// Point to Register defined by Address
 	Wire.write(decToBcd(day));								// Write the day value
@@ -134,6 +190,10 @@ void MCP7940::setDate(int day)
 }
 void MCP7940::setWeekday(int weekday)
 {
+	// Conform input values
+	if (weekday > _SUN) weekday = _SUN;
+	if (weekday < _MON) weekday = _MON;
+
 	Wire.beginTransmission(_MCP7940address);				// transmit to RTC
 	Wire.write(_dateWeekdayReg);							// Point to Register defined by Address
 	Wire.write(decToBcd(weekday) | 0x08);					// Write the weekday value and enabling batt. backup.
@@ -141,6 +201,14 @@ void MCP7940::setWeekday(int weekday)
 }
 void MCP7940::setCalendar(int year, int month, int day)
 {
+	// Conform input values
+	if (year > 99) year = 99;
+	if (year < 0) year = 0;
+	if (month > _DEC) month = _DEC;
+	if (month < _JAN) month = _JAN;
+	if (day > 31) day = 31;
+	if (day < 1) day = 1;
+
 	Wire.beginTransmission(_MCP7940address);				// transmit to RTC
 	Wire.write(_dateDayReg);								// Point to Register defined by Address
 	Wire.write(decToBcd(day));
@@ -208,6 +276,10 @@ int MCP7940::getWeekday()
 }
 void MCP7940::setAlarmHours12(bool alarmSelect, int hours, bool _PM)
 {
+	// Conform Input values
+	if (hours > 12) hours = 12;
+	if (hours < 1) hours = 1;
+
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
 	Wire.beginTransmission(_MCP7940address);				// transmit to RTC
 	Wire.write(baseReg + _alarmHourReg);					// Point to Register defined by Address
@@ -225,6 +297,15 @@ void MCP7940::setAlarmHours12(bool alarmSelect, int hours, bool _PM)
 }
 void MCP7940::setAlarmHours24(bool alarmSelect, int hours)
 {
+
+	// Conform Input values
+	if (hours == 24 || hours < 0) {
+		hours = 0;
+	}
+	else if (hours > 23) {
+		hours = 23;
+	}
+
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
 	Wire.beginTransmission(_MCP7940address);				// transmit to RTC
 	Wire.write(baseReg + _alarmHourReg);					// Point to Register defined by Address
@@ -239,9 +320,15 @@ void MCP7940::setAlarmHours24(bool alarmSelect, int hours)
 	Wire.write(baseReg + _alarmWeekdayReg);					// Point to Register defined by Address
 	Wire.write(configBuff);									//  
 	Wire.endTransmission();									// stop transmittin
+
+
 }
 void MCP7940::setAlarmMinutes(bool alarmSelect, int minutes)
 {
+	// Conform input values
+	if (minutes > 59) minutes = 59;
+	if (minutes < 0) minutes = 0;
+
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
 	Wire.beginTransmission(_MCP7940address);				// transmit to RTC
 	Wire.write(baseReg + _alarmMinReg);						// Point to Register defined by Address
@@ -259,6 +346,10 @@ void MCP7940::setAlarmMinutes(bool alarmSelect, int minutes)
 }
 void MCP7940::setAlarmSeconds(bool alarmSelect, int seconds)
 {
+	// Conform input values
+	if (seconds > 59) seconds = 59;
+	if (seconds < 0) seconds = 0;
+
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
 	Wire.beginTransmission(_MCP7940address);				// transmit to RTC
 	Wire.write(baseReg + _alarmSecReg);						// Point to Register defined by Address
@@ -276,6 +367,10 @@ void MCP7940::setAlarmSeconds(bool alarmSelect, int seconds)
 }
 void MCP7940::setAlarmWeekday(bool alarmSelect, int weekday)
 {
+	// Conform input values
+	if (weekday > _SUN) weekday = _SUN;
+	if (weekday < _MON) weekday = _MON;
+
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;			// Select the alarm base register
 	byte configBuff = readByte(alarmSelect + _alarmWeekdayReg);
 	configBuff &= 0x87;
@@ -286,6 +381,10 @@ void MCP7940::setAlarmWeekday(bool alarmSelect, int weekday)
 }
 void MCP7940::setAlarmDay(bool alarmSelect, int day)
 {
+	// Conform input values, here best we can do it prevent crazy dates from happening.
+	if (day > 31) day = 31;
+	if (day < 1) day = 1;
+
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
 	Wire.beginTransmission(_MCP7940address);				// transmit to RTC
 	Wire.write(baseReg + _alarmDateReg);					// Point to Register defined by Address
@@ -303,6 +402,18 @@ void MCP7940::setAlarmDay(bool alarmSelect, int day)
 }
 void MCP7940::setAlarmAll12(bool alarmSelect, int month, int date, int hours, bool _PM, int minutes, int seconds)
 {
+	// Conform Input values
+	if (month > _DEC) month = _DEC;
+	if (month < _JAN) month = _JAN;
+	if (date > 31) date = 31;
+	if (date < 1) date = 1;
+	if (hours > 12) hours = 12;
+	if (hours < 1) hours = 1;
+	if (minutes > 59) minutes = 59;
+	if (minutes < 0) minutes = 0;
+	if (seconds > 59) seconds = 59;
+	if (seconds < 0) seconds = 0;
+
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
 	byte configBuff = readByte(alarmSelect + _alarmWeekdayReg);
 	configBuff &= 0x87;
@@ -318,6 +429,23 @@ void MCP7940::setAlarmAll12(bool alarmSelect, int month, int date, int hours, bo
 }
 void MCP7940::setAlarmAll24(bool alarmSelect, int month, int date, int hours, int minutes, int seconds)
 {
+
+	// Conform Input values
+	if (month > _DEC) month = _DEC;
+	if (month < _JAN) month = _JAN;
+	if (date > 31) date = 31;
+	if (date < 1) date = 1;
+	if (hours == 24 || hours < 0) {
+		hours = 0;
+	}
+	else if (hours > 23) {
+		hours = 23;
+	}
+	if (minutes > 59) minutes = 59;
+	if (minutes < 0) minutes = 0;
+	if (seconds > 59) seconds = 59;
+	if (seconds < 0) seconds = 0;
+
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
 	byte configBuff = readByte(alarmSelect + _alarmWeekdayReg);
 	configBuff &= 0x87;
@@ -576,12 +704,18 @@ void MCP7940::writeData(byte reg, byte* buffer, int numBytes)
 }
 byte MCP7940::readData(byte reg, byte* buffer, int numBytes)
 {
+	Wire.beginTransmission(_MCP7940address);	// transmit to RTC
+	Wire.write(reg);							// Point to starting Register
+	Wire.endTransmission(false);
+
 	if (numBytes > 32)
 	{
+		// Arduino's I2C buffer is only 32 bytes.
+		// to get around this we perform the large read in segments.
 		for (int j = 0; j < (numBytes / 32); j++)
 		{
 			Wire.requestFrom(_MCP7940address, numBytes);
-			for (int i = 0; i < numBytes;i++)
+			for (int i = 0; i < numBytes; i++)
 			{
 				buffer[(j * 32) + i] = Wire.read();
 				if ((reg + (j * 32) + i) >= _dat0x3F) break;				// Prevent an overflow condition 
@@ -592,15 +726,15 @@ byte MCP7940::readData(byte reg, byte* buffer, int numBytes)
 		Wire.requestFrom(_MCP7940address, numBytes);
 		for (int i = 0; i < numBytes;i++)
 		{
-			buffer[(j * 32) + i] = Wire.read();
-			if ((reg + (j * 32) + i) >= _dat0x3F) break;				// Prevent an overflow condition 
+			buffer[i] = Wire.read();
+			if ((reg + i) >= _dat0x3F) break;				// Prevent an overflow condition 
 		}
 	}
 	Wire.endTransmission();								// stop transmitting
 }
 void MCP7940::standbyMode()
 {
-
+	// May be left unimplemented
 }
 
 /////////////////////
