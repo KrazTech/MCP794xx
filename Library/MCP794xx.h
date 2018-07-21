@@ -156,22 +156,22 @@ enum alarmOffsets {
 
 // Alarm Status Definitions
 // bitwise flags:
-// |ALM1IF|ALM0IF|3 BITS FOR ALM1 MATCH CONFIG|3 BITS FOR ALM0 MATCH CONFIG|
+// |ALM1IF|3 BITS FOR ALM1 MATCH CONFIG|ALM0IF|3 BITS FOR ALM0 MATCH CONFIG|
 
-#define _0statusMask		0x47
-#define	_0MatchSec			0x40
-#define	_0MatchMin			0x41
-#define	_0MatchHours		0x42
-#define	_0MatchWeekday		0x43
-#define	_0MatchDate			0x44
-#define	_0MatchAll			0x45
-#define _1statusMask		0xB8
+#define _0statusMask		0x0F
+#define	_0MatchSec			0x08
+#define	_0MatchMin			0x09
+#define	_0MatchHours		0x0A
+#define	_0MatchWeekday		0x0B
+#define	_0MatchDate			0x0C
+#define	_0MatchAll			0x0F
+#define _1statusMask		0xF0
 #define	_1MatchSec			0x80
-#define	_1MatchMin			0x81
-#define	_1MatchHours		0x90
-#define	_1MatchWeekday		0x98
-#define	_1MatchDate			0xA0
-#define	_1MatchAll			0xA8
+#define	_1MatchMin			0x90
+#define	_1MatchHours		0xA0
+#define	_1MatchWeekday		0xB0
+#define	_1MatchDate			0xC0
+#define	_1MatchAll			0xF0
 
 
 
@@ -252,7 +252,7 @@ public:
 	void setAlarmAll24(bool alarmSelect, int month, int date, int hours, int minutes, int seconds);					// Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
 	void enableAlarm(bool alarmSelect);								// Enable alarm 0/1
 	void disableAlarm(bool alarmSelect);							// Disable alarm 0/1
-	byte checkAlarm(bool alarmSelect);								// Check which alarm went off, and what triggered it, returns status value (check alarmStatus enum)
+	byte checkAlarm();												// Check which alarm went off, and what triggered it, returns status value (check alarmStatus enum)
 
 	int getPwrDownHours();
 	int getPwrDownMinutes();

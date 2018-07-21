@@ -471,7 +471,7 @@ void MCP7940::disableAlarm(bool alarmSelect)
 	configBuff &= alarmSelect ? 0xDF : 0xEF;
 	writeByte(_sysCtrlReg, configBuff);
 }
-byte MCP7940::checkAlarm(bool alarmSelect)
+byte MCP7940::checkAlarm()
 {
 	byte ctrlReg = (readByte(_sysCtrlReg) & 0x30);			// Read Control reg and mask out alarm en. bits.
 	byte regBuff;
