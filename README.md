@@ -13,7 +13,7 @@ The Kraztech MCP794xx Real Time Clock module is an easy to use full feature boar
 ## Documentation
 
 <ul>
-  <li><b>On the Todo List</b></li>
+  <li><b><a href="https://github.com/KrazTech/MCP794xx/wiki">Library Wiki</a></b> *Note: currently under development</li>
  </ul>
 
 ## License
