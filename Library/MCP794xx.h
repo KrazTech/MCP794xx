@@ -1,5 +1,5 @@
 /*
-Name:		MCP7940.h
+Name:		MCP794xx.h
 Created:	5/2/2018 11:39:58 PM
 Author:	Chris Krasnichuk
 
@@ -8,8 +8,8 @@ Author:	Chris Krasnichuk
 #include <Wire.h>
 #include <HardwareSerial.h>
 
-#ifndef _MCP7940_h
-#define _MCP7940_h
+#ifndef _MCP794xx_h
+#define _MCP794xx_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
@@ -21,8 +21,8 @@ Author:	Chris Krasnichuk
 // Definitions
 ///////////////////
 
-// MCP7940 Parameter Definitions
-#define _MCP7940address		0x6F
+// MCP794xx Parameter Definitions
+#define _MCP794xxaddress		0x6F
 
 // Register Definitations
 enum registers {
@@ -30,7 +30,7 @@ enum registers {
 	_timeMinReg,
 	_timeHourReg,
 	_dateWeekdayReg,
-	_dateDayReg,
+	_dateDateReg,
 	_dateMonthReg,
 	_dateYearReg,
 	_sysCtrlReg,
@@ -192,7 +192,7 @@ enum months {
 };
 
 enum weekdays {
-	_MON,
+	_MON=0x01,
 	_TUE,
 	_WED,
 	_THUR,
@@ -210,14 +210,14 @@ enum sqWaveConfig {
 };
 
 
-class MCP7940 {
+class MCP794xx {
 public:
 
 	// Flags
 	bool PM = NULL;			// Signifies if the last getHours() call had a 12h result in the PM.
 	bool LPYR = NULL;		// Signifies if the last getYear() resulted in a leap year.
 
-	MCP7940();
+	MCP794xx();
 
 	void start();													// Activate the RTC Clock
 	void stop();													// Stop the RTC Clock
@@ -231,9 +231,9 @@ public:
 	void setTime24(int hour, int minute, int second);				// Set the time in 24 Hour format
 	void setYear(int year);											// Set the year
 	void setMonth(int month);										// Set the month
-	void setDate(int day);											// Set the day of the month
+	void setDate(int date);											// Set the day of the month
 	void setWeekday(int weekday);									// Set the weekday (Monday, Tuesday, ...)
-	void setCalendar(int year, int month, int day);					// Set the Date (Weekday must be set seperately)
+	void setCalendar(int year, int month, int date);					// Set the Date (Weekday must be set seperately)
 	int getHours();													// Returns the hour (returns hour, for 12 hour format check PM variable)
 	int getMinutes();												// Returns the minute of the hour
 	int getSeconds();												// Returns the seconds of the minute
@@ -247,7 +247,7 @@ public:
 	void setAlarmMinutes(bool alarmSelect, int minutes);			// Set alarm 0/1 to trigger on a match of minutes
 	void setAlarmSeconds(bool alarmSelect, int seconds);			// Set alarm 0/1 to trigger on a match of seconds
 	void setAlarmWeekday(bool alarmSelect, int weekday);			// Set alarm 0/1 to trigger on a match of weekday
-	void setAlarmDay(bool alarmSelect, int day);					// Set alarm 0/1 to trigger on a match of day of the month
+	void setAlarmDate(bool alarmSelect, int date);					// Set alarm 0/1 to trigger on a match of day of the month
 	void setAlarmAll12(bool alarmSelect, int month, int date, int hours, bool _PM, int minutes, int seconds);		// Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
 	void setAlarmAll24(bool alarmSelect, int month, int date, int hours, int minutes, int seconds);					// Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
 	void enableAlarm(bool alarmSelect);								// Enable alarm 0/1
