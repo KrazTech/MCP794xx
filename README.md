@@ -1,7 +1,7 @@
 # Kraztech MCP7940N Real Time Clock Module
 <img src="https://www.kraztech.ca/media/github/MCP7940_kickstarter.jpg" width="300" height="169">
 
-The Kraztech MCP7940N Real Time Clock module is an easy to use full feature board that uses I<sup>2</sup>C
+The Kraztech MCP794xx Real Time Clock module is an easy to use full feature board that uses I<sup>2</sup>C
 
 ## Repository Contents
 
@@ -13,7 +13,7 @@ The Kraztech MCP7940N Real Time Clock module is an easy to use full feature boar
 ## Documentation
 
 <ul>
-  <li><b>On the Todo List</b></li>
+  <li><b><a href="https://github.com/KrazTech/MCP794xx/wiki">Library Wiki</a></b> *Note: currently under development</li>
  </ul>
 
 ## License
