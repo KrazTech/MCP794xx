@@ -147,31 +147,33 @@ enum alarmOffsets {
 #define _alarmIFBit			0x08
 
 // Alarm Configuration Definitions *Note, These are configured for an active high alarm output
-#define _alarmMatchSeconds	0x80
-#define _alarmMatchMinutes	0x90
-#define _alarmMatchHours	0xA0
-#define _alarmMatchWeekday	0xB0
-#define _alarmMatchDate		0xC0
-#define _alarmMatchAll		0xF0
+#define _alarmMatchSeconds	0x00
+#define _alarmMatchMinutes	0x10
+#define _alarmMatchHours	0x20
+#define _alarmMatchWeekday	0x30
+#define _alarmMatchDate		0x40
+#define _alarmMatchAll		0x70
 
 // Alarm Status Definitions
 // bitwise flags:
 // |ALM1IF|3 BITS FOR ALM1 MATCH CONFIG|ALM0IF|3 BITS FOR ALM0 MATCH CONFIG|
 
+#define _0statusIF			0x08
 #define _0statusMask		0x0F
-#define	_0MatchSec			0x08
-#define	_0MatchMin			0x09
-#define	_0MatchHours		0x0A
-#define	_0MatchWeekday		0x0B
-#define	_0MatchDate			0x0C
-#define	_0MatchAll			0x0F
+#define	_0matchSec			0x08
+#define	_0matchMin			0x09
+#define	_0matchHours		0x0A
+#define	_0matchWeekday		0x0B
+#define	_0matchDate			0x0C
+#define	_0matchAll			0x0F
+#define _1statusIF			0x80
 #define _1statusMask		0xF0
-#define	_1MatchSec			0x80
-#define	_1MatchMin			0x90
-#define	_1MatchHours		0xA0
-#define	_1MatchWeekday		0xB0
-#define	_1MatchDate			0xC0
-#define	_1MatchAll			0xF0
+#define	_1matchSec			0x80
+#define	_1matchMin			0x90
+#define	_1matchHours		0xA0
+#define	_1matchWeekday		0xB0
+#define	_1matchDate			0xC0
+#define	_1matchAll			0xF0
 
 
 
@@ -248,9 +250,10 @@ public:
 	void setAlarmSeconds(bool alarmSelect, int seconds);			// Set alarm 0/1 to trigger on a match of seconds
 	void setAlarmWeekday(bool alarmSelect, int weekday);			// Set alarm 0/1 to trigger on a match of weekday
 	void setAlarmDate(bool alarmSelect, int date);					// Set alarm 0/1 to trigger on a match of day of the month
-	void setAlarmAll12(bool alarmSelect, int month, int date, int hours, bool _PM, int minutes, int seconds);		// Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
-	void setAlarmAll24(bool alarmSelect, int month, int date, int hours, int minutes, int seconds);					// Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
+	void setAlarmAll12(bool alarmSelect, int month, int date, int weekday, int hours, bool _PM, int minutes, int seconds);		// Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
+	void setAlarmAll24(bool alarmSelect, int month, int date, int weekday, int hours, int minutes, int seconds);					// Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
 	void enableAlarm(bool alarmSelect);								// Enable alarm 0/1
+	void clearFlag(bool alarmSelect);
 	void disableAlarm(bool alarmSelect);							// Disable alarm 0/1
 	byte checkAlarm();												// Check which alarm went off, and what triggered it, returns status value (check alarmStatus enum)
 

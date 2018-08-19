@@ -190,13 +190,15 @@ void MCP794xx::setDate(int date)
 }
 void MCP794xx::setWeekday(int weekday)
 {
+	byte regBuff;
 	// Conform input values
 	if (weekday > _SUN) weekday = _SUN;
 	if (weekday < _MON) weekday = _MON;
+	regBuff = readByte(_dateWeekdayReg) & 0xf8;
 
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(_dateWeekdayReg);							// Point to Register defined by Address
-	Wire.write(decToBcd(weekday) | 0x08);					// Write the weekday value and enabling batt. backup.
+	Wire.write(regBuff | decToBcd(weekday) | 0x08);					// Write the weekday value and enabling batt. backup.
 	Wire.endTransmission();									// stop transmitting
 }
 void MCP794xx::setCalendar(int year, int month, int date)
@@ -222,7 +224,13 @@ int MCP794xx::getHours()
 	if (hourBuff & 0x40)
 	{
 		// 12 hour format
-		if (hourBuff & 0x20) PM = true;	// Set the PM class variable as true.
+		if (hourBuff & 0x20)
+		{
+			PM = true;
+		}
+		else {
+			PM = false;
+		}
 		hourBuff &= 0x1F;				// Mask out right bits
 	}
 	else {
@@ -286,8 +294,8 @@ void MCP794xx::setAlarmHours12(bool alarmSelect, int hours, bool _PM)
 	Wire.write(decToBcd(hours) | (_PM ? 0x20 : 0x00));		//  
 	Wire.endTransmission();									// stop transmittin
 
-	byte configBuff = readByte(alarmSelect + _alarmWeekdayReg);
-	configBuff &= 0x87;
+	byte configBuff = readByte(baseReg + _alarmWeekdayReg);
+	configBuff &= 0x80;
 	configBuff |= _alarmMatchHours;
 
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
@@ -312,8 +320,8 @@ void MCP794xx::setAlarmHours24(bool alarmSelect, int hours)
 	Wire.write(decToBcd(hours));							//  
 	Wire.endTransmission();									// stop transmittin
 
-	byte configBuff = readByte(alarmSelect + _alarmWeekdayReg);
-	configBuff &= 0x87;
+	byte configBuff = readByte(baseReg + _alarmWeekdayReg);
+	configBuff &= 0x80;
 	configBuff |= _alarmMatchHours;
 
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
@@ -335,8 +343,8 @@ void MCP794xx::setAlarmMinutes(bool alarmSelect, int minutes)
 	Wire.write(decToBcd(minutes));							//  
 	Wire.endTransmission();									// stop transmittin
 
-	byte configBuff = readByte(alarmSelect + _alarmWeekdayReg);
-	configBuff &= 0x87;
+	byte configBuff = readByte((baseReg + _alarmWeekdayReg)) & 0x87;
+	configBuff &= 0x80;
 	configBuff |= _alarmMatchMinutes;
 
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
@@ -356,8 +364,8 @@ void MCP794xx::setAlarmSeconds(bool alarmSelect, int seconds)
 	Wire.write(decToBcd(seconds));							//  
 	Wire.endTransmission();									// stop transmittin
 
-	byte configBuff = readByte(alarmSelect + _alarmWeekdayReg);
-	configBuff &= 0x87;
+	byte configBuff = readByte(baseReg + _alarmWeekdayReg);
+	configBuff &= 0x80;
 	configBuff |= _alarmMatchSeconds;
 
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
@@ -372,8 +380,8 @@ void MCP794xx::setAlarmWeekday(bool alarmSelect, int weekday)
 	if (weekday < _MON) weekday = _MON;
 
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;			// Select the alarm base register
-	byte configBuff = readByte(alarmSelect + _alarmWeekdayReg);
-	configBuff &= 0x87;
+	byte configBuff = readByte(baseReg + _alarmWeekdayReg);
+	configBuff &= 0x80;
 	Wire.beginTransmission(_MCP794xxaddress);						// transmit to RTC
 	Wire.write(baseReg + _alarmWeekdayReg);							// Point to Register defined by Address
 	Wire.write(configBuff | decToBcd(weekday) | _alarmMatchWeekday);		//  
@@ -391,8 +399,8 @@ void MCP794xx::setAlarmDate(bool alarmSelect, int date)
 	Wire.write(decToBcd(date));								//  
 	Wire.endTransmission();									// stop transmittin
 
-	byte configBuff = readByte(alarmSelect + _alarmWeekdayReg);
-	configBuff &= 0x87;
+	byte configBuff = readByte(baseReg + _alarmWeekdayReg);
+	configBuff &= 0x80;
 	configBuff |= _alarmMatchDate;
 
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
@@ -400,13 +408,15 @@ void MCP794xx::setAlarmDate(bool alarmSelect, int date)
 	Wire.write(configBuff);									//  
 	Wire.endTransmission();									// stop transmittin
 }
-void MCP794xx::setAlarmAll12(bool alarmSelect, int month, int date, int hours, bool _PM, int minutes, int seconds)
+void MCP794xx::setAlarmAll12(bool alarmSelect, int month, int date, int weekday, int hours, bool _PM, int minutes, int seconds)
 {
 	// Conform Input values
 	if (month > _DEC) month = _DEC;
 	if (month < _JAN) month = _JAN;
 	if (date > 31) date = 31;
 	if (date < 1) date = 1;
+	if (weekday < _MON) weekday = _MON;
+	if (weekday > _SUN) weekday = _SUN;
 	if (hours > 12) hours = 12;
 	if (hours < 1) hours = 1;
 	if (minutes > 59) minutes = 59;
@@ -415,19 +425,24 @@ void MCP794xx::setAlarmAll12(bool alarmSelect, int month, int date, int hours, b
 	if (seconds < 0) seconds = 0;
 
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
-	byte configBuff = readByte(alarmSelect + _alarmWeekdayReg);
-	configBuff &= 0x87;
+	byte configBuff = readByte(baseReg + _alarmWeekdayReg);
+	configBuff &= 0x80;
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(baseReg);									// Point to Register defined by Address
 	Wire.write(decToBcd(seconds));
 	Wire.write(decToBcd(minutes));
-	Wire.write(decToBcd(hours) | (_PM ? 0x20 : 0x00));
-	Wire.write(configBuff | _alarmMatchAll);
+	if (_PM) {
+		Wire.write(decToBcd(hours) | 0x20);
+	}
+	else {
+		Wire.write(decToBcd(hours));
+	}
+	Wire.write(configBuff | _alarmMatchAll | decToBcd(weekday));
 	Wire.write(decToBcd(date));
 	Wire.write(decToBcd(month));
 	Wire.endTransmission();									// stop transmittin
 }
-void MCP794xx::setAlarmAll24(bool alarmSelect, int month, int date, int hours, int minutes, int seconds)
+void MCP794xx::setAlarmAll24(bool alarmSelect, int month, int date, int weekday, int hours, int minutes, int seconds)
 {
 
 	// Conform Input values
@@ -435,6 +450,8 @@ void MCP794xx::setAlarmAll24(bool alarmSelect, int month, int date, int hours, i
 	if (month < _JAN) month = _JAN;
 	if (date > 31) date = 31;
 	if (date < 1) date = 1;
+	if (weekday < _MON) weekday = _MON;
+	if (weekday > _SUN) weekday = _SUN;
 	if (hours == 24 || hours < 0) {
 		hours = 0;
 	}
@@ -447,14 +464,14 @@ void MCP794xx::setAlarmAll24(bool alarmSelect, int month, int date, int hours, i
 	if (seconds < 0) seconds = 0;
 
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
-	byte configBuff = readByte(alarmSelect + _alarmWeekdayReg);
-	configBuff &= 0x87;
+	byte configBuff = readByte(baseReg + _alarmWeekdayReg);
+	configBuff &= 0x80;
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(baseReg);									// Point to Register defined by Address
 	Wire.write(decToBcd(seconds));
 	Wire.write(decToBcd(minutes));
 	Wire.write(decToBcd(hours));
-	Wire.write(configBuff | _alarmMatchAll);
+	Wire.write(configBuff | _alarmMatchAll | decToBcd(weekday));
 	Wire.write(decToBcd(date));
 	Wire.write(decToBcd(month));
 	Wire.endTransmission();									// stop transmittin
@@ -462,8 +479,28 @@ void MCP794xx::setAlarmAll24(bool alarmSelect, int month, int date, int hours, i
 void MCP794xx::enableAlarm(bool alarmSelect)
 {
 	byte configBuff = readByte(_sysCtrlReg);
-	configBuff |= alarmSelect ? 0x20 : 0x10;
+	if (alarmSelect)
+	{
+		configBuff |= 0x20;
+	}
+	else {
+		configBuff |= 0x10;
+	}
+	//configBuff |= alarmSelect ? 0x20 : 0x10;
 	writeByte(_sysCtrlReg, configBuff);
+}
+void MCP794xx::clearFlag(bool alarmSelect)
+{
+	byte regBuff;
+	if (alarmSelect) {
+		regBuff = readByte(_alarm1WeekdayReg);
+		writeByte(_alarm1WeekdayReg, (regBuff & 0xf7)); // Clear IF
+	}
+	else {
+		regBuff = readByte(_alarm0WeekdayReg);
+		writeByte(_alarm0WeekdayReg, (regBuff & 0xf7)); // Clear IF
+	}
+
 }
 void MCP794xx::disableAlarm(bool alarmSelect)
 {
@@ -492,7 +529,7 @@ byte MCP794xx::checkAlarm()
 			{
 			case 0x00:
 				// Match on Second
-				flags |= _0MatchSec;						// Set flags
+				flags |= _0matchSec;						// Set flags
 
 				break;
 			case 0x10:
@@ -502,31 +539,34 @@ byte MCP794xx::checkAlarm()
 				minBuff = readByte(_timeMinReg);			// Read Minute Register
 				regBuff = readByte(_alarm0MinReg);			// Read Alarm Minute Register
 
-				if (minBuff == regBuff) flags |= _0MatchMin;	// Set flags
+				if (minBuff == regBuff) flags |= _0matchMin;	// Set flags
 
 				break;
 			case 0x20:
 				// Match on hours
-				flags |= _0MatchHours;						// Set flags
+				flags |= _0matchHours;						// Set flags
 
 				break;
 			case 0x30:
 				// Match on Day of the week
-				flags |= _0MatchWeekday;					// Set flags
+				flags |= _0matchWeekday;					// Set flags
 
 				break;
 			case 0x40:
 				// Match on the day of the month
-				flags |= _0MatchDate;						// Set flags
+				flags |= _0matchDate;						// Set flags
 
 				break;
 			case 0x70:
 				// Match on Seconds, Minutes, Hours, Day of the Week, Date, and Month.
-				flags |= _0MatchAll;						// Set flags
+				flags |= _0matchAll;						// Set flags
 
 			default:
 				break;
 			}
+			regBuff = readByte(_alarm0WeekdayReg);
+			writeByte(_alarm0WeekdayReg, (regBuff & 0xf7)); // Clear IF
+			disableAlarm(0);
 		}
 
 		if (ctrlReg == 0x30) goto alarm1;					// If both alarms are set, skip the break
@@ -543,7 +583,7 @@ byte MCP794xx::checkAlarm()
 			{
 			case 0x00:
 				// Match on Second
-				flags |= _1MatchSec;						// Set flags
+				flags |= _1matchSec;						// Set flags
 
 				break;
 			case 0x10:
@@ -553,35 +593,39 @@ byte MCP794xx::checkAlarm()
 				minBuff = readByte(_timeMinReg);			// Read Minute Register
 				regBuff = readByte(_alarm1MinReg);			// Read Alarm Minute Register
 
-				if (minBuff == regBuff) flags |= _1MatchMin;	// Set flags
+				if (minBuff == regBuff) flags |= _1matchMin;	// Set flags
 
 				break;
 			case 0x20:
 				// Match on hours
-				flags |= _1MatchHours;						// Set flags
+				flags |= _1matchHours;						// Set flags
 
 				break;
 			case 0x30:
 				// Match on Day of the week
-				flags |= _1MatchWeekday;					// Set flags
+				flags |= _1matchWeekday;					// Set flags
 
 				break;
 			case 0x40:
 				// Match on the day of the month
-				flags |= _1MatchDate;						// Set flags
+				flags |= _1matchDate;						// Set flags
 
 				break;
 			case 0x70:
 				// Match on Seconds, Minutes, Hours, Day of the Week, Date, and Month.
-				flags |= _1MatchAll;						// Set flags
+				flags |= _1matchAll;						// Set flags
 			default:
 				break;
 			}
+			regBuff = readByte(_alarm1WeekdayReg);
+			writeByte(_alarm1WeekdayReg, (regBuff & 0xf7)); // Clear IF
+			disableAlarm(1);
 		}
 		break;
 	default:
 		break;
 	}
+	return flags;
 }
 int MCP794xx::getPwrDownHours()
 {
