@@ -22,9 +22,10 @@ Author:	Chris Krasnichuk
 ///////////////////
 
 /// MCP794xx Parameter Definitions
+//! \def MCP794xx I2C Address
 #define _MCP794xxaddress		0x6F
 
-/// Register Definitations
+//! \enum registers Defines all the MCP794xx registers for easier access
 enum registers {
 	_timeSecReg,
 	_timeMinReg,
@@ -154,9 +155,10 @@ enum alarmOffsets {
 #define _alarmMatchDate		0x40
 #define _alarmMatchAll		0x70
 
-/// Alarm Status Definitions
-/// bitwise flags:
-/// |ALM1IF|3 BITS FOR ALM1 MATCH CONFIG|ALM0IF|3 BITS FOR ALM0 MATCH CONFIG|
+/*  Alarm Status Definitions
+ 	bitwise flags:
+ 	|ALM1IF|3 BITS FOR ALM1 MATCH CONFIG|ALM0IF|3 BITS FOR ALM0 MATCH CONFIG|
+*/
 
 #define _0statusIF			0x08
 #define _0statusMask		0x0F
@@ -177,7 +179,7 @@ enum alarmOffsets {
 
 
 
-/// Day/Month Definitions
+//! \enum months Enumerates the months in a year for easier use
 enum months {
 	_JAN = 0x01,
 	_FEB,
@@ -193,6 +195,7 @@ enum months {
 	_DEC
 };
 
+//! \enum weekdays Enumerates the days of the week for easier & consistent use
 enum weekdays {
 	_MON=0x01,
 	_TUE,
@@ -203,15 +206,19 @@ enum weekdays {
 	_SUN
 };
 
-/// SquareWave Configuration definitions
+//! \enum sqWaveConfig Square Wave Output Frequency
 enum sqWaveConfig {
-	_32kHz,
-	_8kHz,
-	_4kHz,
-	_1Hz
+	_32kHz,	///< Configures Squarewave output at ~32 kHz
+	_8kHz,	///< Configures Squarewave output at ~8 kHz
+	_4kHz,	///< Configures Squarewave output at ~4 kHz
+	_1Hz	///< Configures Squarewave output at ~1 kHz
 };
 
-
+/** \class MCP794xx 
+	\brief Container for the MCP794xx functions
+	This class is used to contain all the interacting functions
+	within an object.
+*/
 class MCP794xx {
 public:
 
@@ -223,8 +230,8 @@ public:
 
 	void start();													///< Activate the RTC Clock
 	void stop();													///< Stop the RTC Clock
-	void setBattOn();
-	void setBattOff();
+	void setBattOn();												///< Turn the battery backup ON (on by default)
+	void setBattOff();												///< Turn the battery backup OFF
 	/**
 	\param hour the hour to be set, in 12 hour format.
 	\param _PM indicates if the hour to be set is AM (false) or PM (true)
@@ -263,8 +270,19 @@ public:
 	\param month the month to be set.
 	*/
 	void setMonth(int month);										///< Set the month
+	/**
+	\param date the day of the month to be set
+	*/
 	void setDate(int date);											///< Set the day of the month
+	/**
+	\param weekday the day of the week to be set. Values from 1-7 (or use the enumeration)
+	*/
 	void setWeekday(int weekday);									///< Set the weekday (Monday, Tuesday, ...)
+	/**
+	\param year the last two digits of the year to be set.
+	\param month the month to be set
+	\param date the day of the month to be set
+	*/
 	void setCalendar(int year, int month, int date);				///< Set the Date (Weekday must be set seperately)
 	int getHours();													///< Returns the hour (returns hour, for 12 hour format check PM variable)
 	int getMinutes();												///< Returns the minute of the hour
@@ -274,37 +292,129 @@ public:
 	int getDate();													///< Returns the day of the month
 	int getWeekday();												///< Returns the weekday
 
+	/**
+	\param alarmSelect used to select which alarm to set
+	\param hours the hour which triggers the alarm (12h format)
+	\param _PM PM indicator for the hours, should be TRUE if the hour is in the PM
+	*/
 	void setAlarmHours12(bool alarmSelect, int hours, bool _PM);	///< Set alarm 0/1 to trigger on a match of hours 12 hour format
+	/**
+	\param alarmSelect used to select which alarm to set
+	\param hours the hour which triggers the alarm (24h format)
+	*/
 	void setAlarmHours24(bool alarmSelect, int hours);				///< Set alarm 0/1 to trigger on a match of hours 12 hour format
+	/**
+	\param alarmSelect used to select which alarm to set
+	\param minutes the minute which triggers the alarm
+	*/
 	void setAlarmMinutes(bool alarmSelect, int minutes);			///< Set alarm 0/1 to trigger on a match of minutes
+	/**
+	\param alarmSelect used to select which alarm to set
+	\param seconds the second which triggers the alarm
+	*/
 	void setAlarmSeconds(bool alarmSelect, int seconds);			///< Set alarm 0/1 to trigger on a match of seconds
+	/**
+	\param alarmSelect used to select which alarm to set
+	\param weekday the day of the week which triggers the alarm. Values from 1-7 (or use the enumeration)
+	*/
 	void setAlarmWeekday(bool alarmSelect, int weekday);			///< Set alarm 0/1 to trigger on a match of weekday
+	/**
+	\param alarmSelect used to select which alarm to set
+	\param date the day of the month which triggers the alarm (1-31)
+	*/
 	void setAlarmDate(bool alarmSelect, int date);					///< Set alarm 0/1 to trigger on a match of day of the month
+	/**
+	\param alarmSelect used to select which alarm to set
+	\param month the month which must match for alarm to trigger
+	\param date the day of the motnh which must match for the alarm to trigger
+	\param weekday the day of the week which must match for the alarm to trigger
+	\param hours the hour which must match for the alarm to trigger (12h format)
+	\param _PM indicates whether the hour is in the AM or PM (TRUE if in PM)
+	\param minutes the minute which must match for the alarm to trigger
+	\param seconds the second which must match for the alarm to trigger
+	*/
 	void setAlarmAll12(bool alarmSelect, int month, int date, int weekday, int hours, bool _PM, int minutes, int seconds);		///< Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
-	void setAlarmAll24(bool alarmSelect, int month, int date, int weekday, int hours, int minutes, int seconds);					///< Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
+	/**
+	\param alarmSelect used to select which alarm to set
+	\param month the month which must match for alarm to trigger
+	\param date the day of the motnh which must match for the alarm to trigger
+	\param weekday the day of the week which must match for the alarm to trigger
+	\param hours the hour which must match for the alarm to trigger (24h format)
+	\param minutes the minute which must match for the alarm to trigger
+	\param seconds the second which must match for the alarm to trigger
+	*/
+	void setAlarmAll24(bool alarmSelect, int month, int date, int weekday, int hours, int minutes, int seconds);   				///< Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
+	/**
+	\param alarmSelect used to select which alarm to enable
+	*/					
 	void enableAlarm(bool alarmSelect);								///< Enable alarm 0/1
+	/**
+	\param alarmSelect used to select which alarm's interrupt flag to clear
+	*/
 	void clearFlag(bool alarmSelect);								///< Clears Alarm Interrupt Flag
+	/**
+	\param alarmSelect used to select which alarm to disable
+	*/
 	void disableAlarm(bool alarmSelect);							///< Disable alarm 0/1
-	byte checkAlarm();												///< Check which alarm went off, and what triggered it, returns status value (check alarmStatus enum)
+	/** \fn checkAlarm
+		\brief Returns a bitwise flag byte indicating which alarm went off and why.
 
-	int getPwrDownHours();
-	int getPwrDownMinutes();
-	int getPwrDownMonth();
-	int getPwrDownDate();
-	int getPwrDownWeekday();
+		The returned byte is formatted as follows:
 
-	int getPwrUpHours();
-	int getPwrUpMinutes();
-	int getPwrUpMonth();
-	int getPwrUpDate();
-	int getPwrUpWeekday();
+ 		|ALM1IF|3 BITS FOR ALM1 MATCH CONFIG|ALM0IF|3 BITS FOR ALM0 MATCH CONFIG|
+
+		performing a bitwise AND (&) operation using the following masks:
+				
+		_0statusIF
+		_0statusMask
+		_0matchSec
+		_0matchMin
+		_0matchHours
+		_0matchWeekday	
+		_0matchDate			
+		_0matchAll			
+		_1statusIF			
+		_1statusMask		
+		_1matchSec			
+		_1matchMin			
+		_1matchHours		
+		_1matchWeekday	
+		_1matchDate			
+		_1matchAll	
+
+		Will indicate which alarm went off and the match conditions.
+
+	*/
+	byte checkAlarm();												
+
+	/** \fn getPwrDownHours
+	 	Returns the hour when the Vin power was cut-off
+		Works for both 12/24h formats
+		12h format uses the _PM class variable to indicate if the hour is in the PM
+	*/
+	int getPwrDownHours();											
+	int getPwrDownMinutes();										///< Returns the minute when the Vin power was cut-off
+	int getPwrDownMonth();											///< Returns the month when the Vin power was cut-off
+	int getPwrDownDate();											///< Returns the day of the month when Vin power was cut-off
+	int getPwrDownWeekday();										///< Returns the day of the week (1-7) when Vin power was cut-off
+
+	/** \fn getPwrUpHours
+	 	Returns the hour when the Vin power was applied
+		Works for both 12/24h formats
+		12h format uses the _PM class variable to indicate if the hour is in the PM
+	*/
+	int getPwrUpHours();											
+	int getPwrUpMinutes();											///< Returns the minute when the Vin power was applied 
+	int getPwrUpMonth();											///< Returns the month when the Vin power was applied
+	int getPwrUpDate();												///< Returns the day of the month when Vin power was applied
+	int getPwrUpWeekday();											///< Returns the day of the week (1-7) when Vin power was applied
 
 	void setMFPin(bool value);										///< Sets the value of the Multifunction pin, disables alarms
 	void setMFPinSquareWave(int selectOut);							///< Configures the Multifunction pin to output a sqaure wave, disables alarms
 
 	void writeData(byte reg, byte* buffer, int numBytes);			///< Write a byte of data to SRAM
 	byte readData(byte reg, byte* buffer, int numBytes);			///< read a byte of data from SRAM
-	void standbyMode();
+	void standbyMode();												///< Currently Unused.
 
 private:
 	byte bcdToDec(byte bcd);
