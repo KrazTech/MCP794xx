@@ -13,7 +13,7 @@ To test the functionality of the Arduino library for the MCP7940 RTC Module.
 #include <Wire.h>
 #include <MCP794xx.h>
 
-MCP7940 rtc1;
+MCP794xx rtc1;
 
 void setup() {
 

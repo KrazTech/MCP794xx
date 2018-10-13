@@ -21,10 +21,10 @@ Author:	Chris Krasnichuk
 // Definitions
 ///////////////////
 
-// MCP794xx Parameter Definitions
+/// MCP794xx Parameter Definitions
 #define _MCP794xxaddress		0x6F
 
-// Register Definitations
+/// Register Definitations
 enum registers {
 	_timeSecReg,
 	_timeMinReg,
@@ -124,11 +124,11 @@ enum registers {
 	_dat0x3F
 };
 
-// Alarm Base Registers
+/// Alarm Base Registers
 #define _alarm0Reg			0x0A
 #define _alarm1Reg			0x11
 
-// Alarm Register OFFSETs
+/// Alarm Register OFFSETs
 enum alarmOffsets {
 	_alarmSecReg,
 	_alarmMinReg,
@@ -138,7 +138,7 @@ enum alarmOffsets {
 	_alarmMonthReg
 };
 
-// Alarm Register Mask Definitions
+/// Alarm Register Mask Definitions
 #define _alarm1Bit			0x20
 #define _alarm0Bit			0x10
 #define _24h				0x00
@@ -146,7 +146,7 @@ enum alarmOffsets {
 #define _timeFormatBit		0x40
 #define _alarmIFBit			0x08
 
-// Alarm Configuration Definitions *Note, These are configured for an active high alarm output
+/// Alarm Configuration Definitions *Note, These are configured for an active high alarm output
 #define _alarmMatchSeconds	0x00
 #define _alarmMatchMinutes	0x10
 #define _alarmMatchHours	0x20
@@ -154,9 +154,9 @@ enum alarmOffsets {
 #define _alarmMatchDate		0x40
 #define _alarmMatchAll		0x70
 
-// Alarm Status Definitions
-// bitwise flags:
-// |ALM1IF|3 BITS FOR ALM1 MATCH CONFIG|ALM0IF|3 BITS FOR ALM0 MATCH CONFIG|
+/// Alarm Status Definitions
+/// bitwise flags:
+/// |ALM1IF|3 BITS FOR ALM1 MATCH CONFIG|ALM0IF|3 BITS FOR ALM0 MATCH CONFIG|
 
 #define _0statusIF			0x08
 #define _0statusMask		0x0F
@@ -177,7 +177,7 @@ enum alarmOffsets {
 
 
 
-// Day/Month Definitions
+/// Day/Month Definitions
 enum months {
 	_JAN = 0x01,
 	_FEB,
@@ -203,7 +203,7 @@ enum weekdays {
 	_SUN
 };
 
-// SquareWave Configuration definitions
+/// SquareWave Configuration definitions
 enum sqWaveConfig {
 	_32kHz,
 	_8kHz,
@@ -216,46 +216,76 @@ class MCP794xx {
 public:
 
 	// Flags
-	bool PM = NULL;			// Signifies if the last getHours() call had a 12h result in the PM.
-	bool LPYR = NULL;		// Signifies if the last getYear() resulted in a leap year.
+	bool PM = NULL;			///< Signifies if the last getHours() call had a 12h result in the PM.
+	bool LPYR = NULL;		///< Signifies if the last getYear() resulted in a leap year.
 
 	MCP794xx();
 
-	void start();													// Activate the RTC Clock
-	void stop();													// Stop the RTC Clock
+	void start();													///< Activate the RTC Clock
+	void stop();													///< Stop the RTC Clock
 	void setBattOn();
 	void setBattOff();
-	void setHours12(int hour, bool _PM);							// Set the hour in 12 Hour format
-	void setHours24(int hour);										// Set the hour in 24 Hour format
-	void setMinutes(int minute);									// Set the minutes
-	void setSeconds(int second);									// Set the seconds
-	void setTime12(int hour, bool _PM, int minute, int second);		// Set the time in 12 Hour format
-	void setTime24(int hour, int minute, int second);				// Set the time in 24 Hour format
-	void setYear(int year);											// Set the year
-	void setMonth(int month);										// Set the month
-	void setDate(int date);											// Set the day of the month
-	void setWeekday(int weekday);									// Set the weekday (Monday, Tuesday, ...)
-	void setCalendar(int year, int month, int date);					// Set the Date (Weekday must be set seperately)
-	int getHours();													// Returns the hour (returns hour, for 12 hour format check PM variable)
-	int getMinutes();												// Returns the minute of the hour
-	int getSeconds();												// Returns the seconds of the minute
-	int getYear();													// Returns the year (Last 2 digits)
-	int getMonth();													// Returns the month
-	int getDate();													// Returns the day of the month
-	int getWeekday();												// Returns the weekday
+	/**
+	\param hour the hour to be set, in 12 hour format.
+	\param _PM indicates if the hour to be set is AM (false) or PM (true)
+	*/
+	void setHours12(int hour, bool _PM);							///< Set the hour in 12 Hour format
+	/**
+	\param hour the hour to be set, in 24 hour format.
+	*/
+	void setHours24(int hour);										///< Set the hour in 24 Hour format
+	/**
+	\param minute the minute to be set. 
+	*/
+	void setMinutes(int minute);									///< Set the minutes
+	/**
+	\param second the second to be set. 
+	*/
+	void setSeconds(int second);									///< Set the seconds
+	/**
+	\param hour the hour to be set, in 12 hour format.
+	\param _PM indicates if the hour to be set in AM (false) or PM (true)
+	\param minute the minute to be set.
+	\param second the second to be set.
+	*/
+	void setTime12(int hour, bool _PM, int minute, int second);		///< Set the time in 12 Hour format
+	/**
+	\param hour the hour to be set, in 24 hour format.
+	\param minute the minute to be set.
+	\param second the second to be set.
+	*/
+	void setTime24(int hour, int minute, int second);				///< Set the time in 24 Hour format
+	/**
+	\param year the last two digits of the year to be set.
+	*/
+	void setYear(int year);											///< Set the year
+	/**
+	\param month the month to be set.
+	*/
+	void setMonth(int month);										///< Set the month
+	void setDate(int date);											///< Set the day of the month
+	void setWeekday(int weekday);									///< Set the weekday (Monday, Tuesday, ...)
+	void setCalendar(int year, int month, int date);				///< Set the Date (Weekday must be set seperately)
+	int getHours();													///< Returns the hour (returns hour, for 12 hour format check PM variable)
+	int getMinutes();												///< Returns the minute of the hour
+	int getSeconds();												///< Returns the seconds of the minute
+	int getYear();													///< Returns the year (Last 2 digits)
+	int getMonth();													///< Returns the month
+	int getDate();													///< Returns the day of the month
+	int getWeekday();												///< Returns the weekday
 
-	void setAlarmHours12(bool alarmSelect, int hours, bool _PM);	// Set alarm 0/1 to trigger on a match of hours 12 hour format
-	void setAlarmHours24(bool alarmSelect, int hours);				// Set alarm 0/1 to trigger on a match of hours 12 hour format
-	void setAlarmMinutes(bool alarmSelect, int minutes);			// Set alarm 0/1 to trigger on a match of minutes
-	void setAlarmSeconds(bool alarmSelect, int seconds);			// Set alarm 0/1 to trigger on a match of seconds
-	void setAlarmWeekday(bool alarmSelect, int weekday);			// Set alarm 0/1 to trigger on a match of weekday
-	void setAlarmDate(bool alarmSelect, int date);					// Set alarm 0/1 to trigger on a match of day of the month
-	void setAlarmAll12(bool alarmSelect, int month, int date, int weekday, int hours, bool _PM, int minutes, int seconds);		// Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
-	void setAlarmAll24(bool alarmSelect, int month, int date, int weekday, int hours, int minutes, int seconds);					// Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
-	void enableAlarm(bool alarmSelect);								// Enable alarm 0/1
-	void clearFlag(bool alarmSelect);
-	void disableAlarm(bool alarmSelect);							// Disable alarm 0/1
-	byte checkAlarm();												// Check which alarm went off, and what triggered it, returns status value (check alarmStatus enum)
+	void setAlarmHours12(bool alarmSelect, int hours, bool _PM);	///< Set alarm 0/1 to trigger on a match of hours 12 hour format
+	void setAlarmHours24(bool alarmSelect, int hours);				///< Set alarm 0/1 to trigger on a match of hours 12 hour format
+	void setAlarmMinutes(bool alarmSelect, int minutes);			///< Set alarm 0/1 to trigger on a match of minutes
+	void setAlarmSeconds(bool alarmSelect, int seconds);			///< Set alarm 0/1 to trigger on a match of seconds
+	void setAlarmWeekday(bool alarmSelect, int weekday);			///< Set alarm 0/1 to trigger on a match of weekday
+	void setAlarmDate(bool alarmSelect, int date);					///< Set alarm 0/1 to trigger on a match of day of the month
+	void setAlarmAll12(bool alarmSelect, int month, int date, int weekday, int hours, bool _PM, int minutes, int seconds);		///< Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
+	void setAlarmAll24(bool alarmSelect, int month, int date, int weekday, int hours, int minutes, int seconds);					///< Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
+	void enableAlarm(bool alarmSelect);								///< Enable alarm 0/1
+	void clearFlag(bool alarmSelect);								///< Clears Alarm Interrupt Flag
+	void disableAlarm(bool alarmSelect);							///< Disable alarm 0/1
+	byte checkAlarm();												///< Check which alarm went off, and what triggered it, returns status value (check alarmStatus enum)
 
 	int getPwrDownHours();
 	int getPwrDownMinutes();
@@ -269,11 +299,11 @@ public:
 	int getPwrUpDate();
 	int getPwrUpWeekday();
 
-	void setMFPin(bool value);										// Sets the value of the Multifunction pin, disables alarms
-	void setMFPinSquareWave(int selectOut);							// Configures the Multifunction pin to output a sqaure wave, disables alarms
+	void setMFPin(bool value);										///< Sets the value of the Multifunction pin, disables alarms
+	void setMFPinSquareWave(int selectOut);							///< Configures the Multifunction pin to output a sqaure wave, disables alarms
 
-	void writeData(byte reg, byte* buffer, int numBytes);												// Write a byte of data to SRAM
-	byte readData(byte reg, byte* buffer, int numBytes);												// read a byte of data from SRAM
+	void writeData(byte reg, byte* buffer, int numBytes);			///< Write a byte of data to SRAM
+	byte readData(byte reg, byte* buffer, int numBytes);			///< read a byte of data from SRAM
 	void standbyMode();
 
 private:
