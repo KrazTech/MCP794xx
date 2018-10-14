@@ -6,14 +6,14 @@ The Kraztech MCP794xx Real Time Clock module is an easy to use full feature boar
 ## Repository Contents
 
 <ul>
-  <li><b>/Firmware</b>   - Example Arduino Sketch for the Module</li>
-  <li><b>/Library</b>    - Library for use with Arduinos</li>
+  <li><b>/Examples</b>   - Example Arduino Sketch for the Module</li>
+  <li><b>/src</b>    - Library for use with Arduinos</li>
 </ul>
 
 ## Documentation
 
 <ul>
-  <li><b><a href="https://github.com/KrazTech/MCP794xx/wiki">Library Wiki</a></b> *Note: currently under development</li>
+  <li><b>/Documentation</b> contains a function reference manual for the library</li>
  </ul>
 
 ## License
