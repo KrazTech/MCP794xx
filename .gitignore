@@ -328,3 +328,40 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+Documentation/Doxyfile
+Documentation/latex/annotated.tex
+*.tex
+Documentation/latex/doxygen.sty
+*.png
+Documentation/latex/make.bat
+Documentation/latex/Makefile
+Documentation/latex/refman.aux
+*.idx
+Documentation/latex/refman.ilg
+Documentation/latex/refman.ind
+Documentation/latex/refman.out
+Documentation/latex/refman.pdf
+Documentation/latex/refman.toc
+Documentation/rtf/FreeSans.ttf
+Documentation/rtf/refman.rtf
+examples/__vm/Upload.vmps.xml
+examples/__vm/Configuration.Debug.vmps.xml
+examples/__vm/Compile.vmps.xml
+examples/__vm/.Firmware.vsarduino.h
+MCP7940.sln
+MCP7940 Module Script.docx
+MCP7940 Library Documentation.docx
+*.sln
+main/main.ino
+examples/Firmware.vcxproj.filters
+examples/Firmware.vcxproj
+testBench/__vm/.testBench.vsarduino.h
+testBench/__vm/Compile.vmps.xml
+testBench/__vm/Configuration.Debug.vmps.xml
+testBench/__vm/Upload.vmps.xml
+testBench/testBench.ino
+testBench/testBench.vcxproj
+testBench/testBench.vcxproj.filters
+src/readme.txt
+src/Library.vcxitems
+src/Library.vcxitems.filters
