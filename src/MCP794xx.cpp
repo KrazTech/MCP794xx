@@ -1,12 +1,20 @@
-/*
-Name:		MCP794xx.cpp
-Created:	5/2/2018 11:39:58 PM
-Author:	Chris Krasnichuk
-Description:
-This file includes all of the function definitions for the MCP794xx library.
-The intent is to keep the interaction with the RTC as simple and straight
-forwards as possible. Definitions can be found in the header file to simplfy
-the use of the library and communication between the RTC.
+/**
+ * @file MCP794xx.cpp
+ * 
+ * @mainpage Kraztech MCP794xx RTC Module Driver
+ * 
+ * @section intro_sec Introduction
+ * 
+ * This is the documentation for the Kraztech's MCP794xx driver for the Arduino platform.
+ * The goal of the driver is to keep it as simple and straight forward as possible
+ * so that beginners can easily and quickly pickup the board and begin having fun
+ * with all the time tracking possibilities!
+ * 
+ * @section author Author
+ * 
+ * Written by Chris Krasnichuk at Kraztech
+ * 
+ * 
 */
 
 #include "MCP794xx.h"

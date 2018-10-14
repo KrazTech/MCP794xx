@@ -1,8 +1,17 @@
-/*
-Name:		MCP794xx.h
-Created:	5/2/2018 11:39:58 PM
-Author:	Chris Krasnichuk
-
+/**
+ * @file MXP794xx.h
+ * 
+ * This is part of Kraztech's MCP794xx driver for the Arduino platform.
+ * it has been written to work with the MCP794xx series of RTC ICs from
+ * Microchip.
+ * 
+ * This board uses I2C to communicate between the arduino and the board.
+ * 
+ * Kraztech invests time and resources providing this open source code,
+ * please support us by purchasing from Kraztech!
+ * 
+ * Written by Chris Krasnichuk
+ * 
 */
 
 #include <Wire.h>
