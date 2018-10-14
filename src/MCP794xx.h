@@ -284,13 +284,35 @@ public:
 	\param date the day of the month to be set
 	*/
 	void setCalendar(int year, int month, int date);				///< Set the Date (Weekday must be set seperately)
-	int getHours();													///< Returns the hour (returns hour, for 12 hour format check PM variable)
-	int getMinutes();												///< Returns the minute of the hour
-	int getSeconds();												///< Returns the seconds of the minute
-	int getYear();													///< Returns the year (Last 2 digits)
-	int getMonth();													///< Returns the month
-	int getDate();													///< Returns the day of the month
-	int getWeekday();												///< Returns the weekday
+	/** Returns the hour (returns hour, for 12 hour format check PM variable)
+	 * \return the hour
+	 */
+	int getHours();	
+	/** Returns the minute of the hour
+	 * \return the minute
+	 */
+	int getMinutes();
+	/** Returns the seconds of the minute
+	 * \return seconds
+	 */
+	int getSeconds();
+	/** Returns the year (last 2 digits)
+	 * \return the year
+	 */
+	int getYear();
+	/** Returns the month
+	 * \return the month
+	 */
+	int getMonth();
+	/** Returns the day of the month
+	 * \return the day of the month
+	 */
+	int getDate();	
+
+	/** Returns the weekday
+	 * \return the day of the week
+	 */
+	int getWeekday();
 
 	/**
 	\param alarmSelect used to select which alarm to set
@@ -384,6 +406,8 @@ public:
 
 		Will indicate which alarm went off and the match conditions.
 
+		\return formatted byte containing flags indicating which alarm went off and why
+
 	*/
 	byte checkAlarm();												
 
@@ -391,30 +415,76 @@ public:
 	 	Returns the hour when the Vin power was cut-off
 		Works for both 12/24h formats
 		12h format uses the _PM class variable to indicate if the hour is in the PM
+
+		\return the hour when power was cut-off to the board
 	*/
-	int getPwrDownHours();											
-	int getPwrDownMinutes();										///< Returns the minute when the Vin power was cut-off
-	int getPwrDownMonth();											///< Returns the month when the Vin power was cut-off
-	int getPwrDownDate();											///< Returns the day of the month when Vin power was cut-off
-	int getPwrDownWeekday();										///< Returns the day of the week (1-7) when Vin power was cut-off
+	int getPwrDownHours();
+	/** Returns the minute when the Vin power was cut-off
+	 * \return the minute when when power was cut-off to the board 
+	 */										
+	int getPwrDownMinutes();
+	/** Returns the month when the Vin power was cut-off
+	 * \return the month when the pwoer was cut-off to the board
+	 */
+	int getPwrDownMonth();
+	/** Returns the day of the month when Vin power was cut-off
+	 * \return the day of the month when power was cut-off to the baord
+	 */
+	int getPwrDownDate(); 
+	/** Returns the day of the week (1-7) when Vin power was cut-off
+	 * \return the day of the week when power was cut-off to the board
+	 */
+	int getPwrDownWeekday(); 
 
 	/** \fn getPwrUpHours
 	 	Returns the hour when the Vin power was applied
 		Works for both 12/24h formats
 		12h format uses the _PM class variable to indicate if the hour is in the PM
+		\return the hour when power was applied to the board
 	*/
-	int getPwrUpHours();											
-	int getPwrUpMinutes();											///< Returns the minute when the Vin power was applied 
-	int getPwrUpMonth();											///< Returns the month when the Vin power was applied
-	int getPwrUpDate();												///< Returns the day of the month when Vin power was applied
-	int getPwrUpWeekday();											///< Returns the day of the week (1-7) when Vin power was applied
+	int getPwrUpHours();
+	/** Returns the minute when the Vin power was applied 
+	 * \return the minute when power was applied to the board
+	 */											
+	int getPwrUpMinutes();
+	/** Returns the month when the Vin power was applied
+	 * \return the month when power was applied to the board
+	 */
+	int getPwrUpMonth();
+	/** Returns the day of the month when Vin power was applied
+	 * \return the day of the month when power was applied to the board
+	 */
+	int getPwrUpDate();	
+	/** Returns the day of the week (1-7) when Vin power was applied
+	 * \return the day of the week when power was applied to the board
+	 */
+	int getPwrUpWeekday();
 
-	void setMFPin(bool value);										///< Sets the value of the Multifunction pin, disables alarms
-	void setMFPinSquareWave(int selectOut);							///< Configures the Multifunction pin to output a sqaure wave, disables alarms
+	/** Sets the value of the Multifunction pin, disables alarms
+	 * \param value the boolean value (0/1) to apply to the MFPin.
+	 */
+	void setMFPin(bool value);
 
-	void writeData(byte reg, byte* buffer, int numBytes);			///< Write a byte of data to SRAM
-	byte readData(byte reg, byte* buffer, int numBytes);			///< read a byte of data from SRAM
-	void standbyMode();												///< Currently Unused.
+	/** Configures the Multifunction pin to output a square wave, disables alarms
+	 * \param selectOut configuration parameter to set the output frequency. See enumeration.
+	 */
+	void setMFPinSquareWave(int selectOut);
+
+	/** write a stream of data to the RTC module's SRAM
+	 * \param reg the register address to begin writing at
+	 * \param buffer pointer to the first buffer element
+	 * \param numBytes number of bytes to write to the device
+	 */
+	void writeData(byte reg, byte* buffer, int numBytes);
+	/** read a stream of data from the RTC module's SRAM
+	 * \param reg the register address to begin reading at
+	 * \param buffer pointer to the array which will store the read bytes
+	 * \param numBytes number of bytes to read from the device
+	 */
+	void readData(byte reg, byte* buffer, int numBytes);
+	/** currently unused
+	 */
+	void standbyMode();
 
 private:
 	byte bcdToDec(byte bcd);

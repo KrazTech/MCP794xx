@@ -746,7 +746,7 @@ void MCP794xx::writeData(byte reg, byte* buffer, int numBytes)
 	}
 	Wire.endTransmission();								// stop transmitting
 }
-byte MCP794xx::readData(byte reg, byte* buffer, int numBytes)
+void MCP794xx::readData(byte reg, byte* buffer, int numBytes)
 {
 	Wire.beginTransmission(_MCP794xxaddress);	// transmit to RTC
 	Wire.write(reg);							// Point to starting Register
