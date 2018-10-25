@@ -38,7 +38,7 @@ void setup() {
 
 	// You can also set the date in a single function call
 	rtc1.setCalendar(18, _FEB, 23);	// Set the calendar, weekday must be set seperately
-	rtc1.setWeekday(_THURS);		// Set the weekday.
+	rtc1.setWeekday(_THUR);		// Set the weekday.
 
 	rtc1.start();				// Turn on the clock, begins tracking time
 
