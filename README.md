@@ -15,6 +15,10 @@ The Kraztech MCP794xx Real Time Clock module is an easy to use full feature boar
 <ul>
   <li><b>/Documentation</b> contains a function reference manual for the library</li>
  </ul>
+ 
+## Connecting the board
+
+On an Arduino Nano, you should connect the SDA pin to A4 and the SCL pin to A5. GND can be connected to any GND pin on the chip. Vcc can be connected to either the 5V or 3.3V pins.
 
 ## License
 
