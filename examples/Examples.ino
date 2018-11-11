@@ -1,17 +1,16 @@
 /*
-Name:		ArduinoExample.ino
-Created:	5/2/2018 11:42:00 PM
+Name:		Firmware.ino
+Created:	2018-10-14
 Author:	Chris Krasnichuk
 Description:
 
-To test the functionality of the Arduino library for the MCP7940 RTC Module.
+Example code for the Kraztech MCP794xx RTC Module
 
 */
 
-// the setup function runs once when you press reset or power the board
-
 #include <Wire.h>
 #include <MCP794xx.h>
+
 
 MCP794xx rtc1;
 
@@ -22,14 +21,28 @@ void setup() {
 
 	// Run through setting the date and time.
 	rtc1.setHours12(11, false); // Set the time to 11 AM
+	//rtc1.setHours24(11);		// Set the time to 1100 (24h format)
 	rtc1.setMinutes(39);		// Set the minutes to 39
 	rtc1.setSeconds(45);		// Set the second to 45
+
+	// You can also set the time in a single function call
+	rtc1.setTime12(11, false, 39, 45);			// Set the time in 12h format
+	//rtc1.setTime24(11, 39, 45);				// Set the time in 24h format
+
+
+
 	rtc1.setYear(18);			// Set the year to 18
 	rtc1.setMonth(_FEB);		// Set the Month
 	rtc1.setDate(23);			// Set the date (0-31)
 	rtc1.setWeekday(_THUR);		// Set the day of the week
+
+	// You can also set the date in a single function call
+	rtc1.setCalendar(18, _FEB, 23);	// Set the calendar, weekday must be set seperately
+	rtc1.setWeekday(_THUR);		// Set the weekday.
+
 	rtc1.start();				// Turn on the clock, begins tracking time
 
+	delay(1000);
 
 	// Read back the date and time.
 	Serial.print("Time: ");
@@ -43,11 +56,14 @@ void setup() {
 	// The PM value of the MCP7940 class is updated every time the hours are read from the module.
 	// PM is TRUE if the time is in 12 hour format and in the after noon (i.e. 3:45 PM)
 	// Otherwise PM is false
-	rtc1.PM ? Serial.print(" PM") : Serial.print(" AM");
-	Serial.print("\n");
+	if (rtc1.PM == true)
+	{
+		Serial.print(" PM\n");
+	} else {
+		Serial.print(" AM\n");
+	}
 
 	Serial.print("Weekday: ");
-
 	// Returns the Day of the Week value, these can be user defined but the library contains predefined values
 	Serial.print(rtc1.getWeekday());
 	Serial.print(" | Date: ");
@@ -57,8 +73,6 @@ void setup() {
 	Serial.print(" | Year: ");
 	Serial.print(rtc1.getYear());		// Returns the last two digits of the year
 	Serial.print("\n");
-
-	rtc1.setCalendar(55, _NOV, 1);		// Set the calendar with one function call
 
 	delay(1000);
 
