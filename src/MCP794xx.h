@@ -220,7 +220,8 @@ enum sqWaveConfig {
 	_32kHz,	///< Configures Squarewave output at ~32 kHz
 	_8kHz,	///< Configures Squarewave output at ~8 kHz
 	_4kHz,	///< Configures Squarewave output at ~4 kHz
-	_1Hz	///< Configures Squarewave output at ~1 kHz
+	_1Hz,	///< Configures Squarewave output at ~1 kHz
+	_OFF
 };
 
 /** \class MCP794xx
@@ -386,7 +387,7 @@ public:
 	/**
 	\param polarity used to set the alarm polarity of the RTC.
 	*/
-	void  setAlarmPolarity(bool polarity);					///< Configures the alarm polarity, default is 0
+	void setAlarmPolarity(bool polarity);					///< Configures the alarm polarity, default is 0
 	/**
 	\param alarmSelect used to select which alarm to disable
 	*/

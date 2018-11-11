@@ -167,9 +167,63 @@ RTC.setWeekday(_FRI); // Sets the weekday to Friday
 ```
 # Reading the Time
 # Reading the Calendar
+# MFP
+The Multifunction Pin (MFP) is an output pin which the MCP794xx Module uses as either a General Purpose Output (we set the output value manually), an Alarm Interrupt Output (the pin becomes Asserted when an alarm goes off), or as a Square Wave Clock Output (a small selection of output frequencies). While it can perform all of these tasks, it can be configured for **one** at any time.
+
+When configuring the MFP, you must be mindful that enabling one feature may be, or could be, overridden by another feature. The hierarchy of which feature takes priority is described in the following through table:
+
+|Square Wave Output Enabled|Alarm 0 Enabled|Alarm 1 Enabled|Mode|
+|:-:|:-:|:-:|:-:|
+|0|0|0|General Purpose Output|
+|0|0|1|Alarm Interrupt Output|
+|0|1|0|Alarm Interrupt Output|
+|0|1|1|Alarm Interrupt Output|
+|1|x|x|Sqaure Wave Output|
+
+To put the table into plain english, all it says is:
+1. If the Square wave output is enabled, it doesn't matter what else is enabled, the Square Wave output takes precedent on the MFP.
+2. If one of the alarms are enabled, the MFP will be attached to their interrupt output signal.
+3. If neither the Square Wave Output nor the Alarms are enabled, then the MFP will default to a general purpose output pin which can be set via software.
+
+### Square Wave output
+Since the Square Wave output will take precedent over all other functionality, we'll cover that first. The square wave output can be set to 4 different output frequencies which are connected to Enumerations for simplicity.
+
+|Enumeration|Output Frequency|
+|:-:|:-:|
+|_32kHz|32.768 kHz|
+|_8kHz|8.192 kHz|
+|_4kHz|4.096 kHz|
+|_1Hz|1 Hz|
+|_OFF|(Disables SquareWave Output)
+
+With all the ground work laid out, configuring the Square Wave output is shown here:
+```
+/// Using method: void setMFPinSquareWave(int selectOut);
+
+RTC.setMFPinSquareWave(_32kHz); // Sets the MFP with the square wave output at 32.768 kHz
+
+RTC.setMFPinSquareWave(_8kHz);  // Sets the MFP with the square wave output at 8.192 kHz
+
+RTC.setMFPinSquareWave(_4kHz);  // Sets the MFP with the square wave output at 4.096 kHz
+
+RTC.setMFPinSquareWave(_1Hz);   // Sets the MFP with the square wave output at 1 Hz
+
+RTC.setMFPinSquareWavE(_OFF);   // Disables the Squarewave output
+```
+
+Remember that once the Square Wave is activated it will take control of the MFP until disabled. Meaning that it must be disabled before the alarms will assert any interrupt signals on the MFP.
+
+### General Purpose output
+Before getting into the involved topic of using the Alarms, we'll quickly cover the use of general purpose output. This just lets us to set the MFP to either a logic high (1 or Vcc) or logic low (0 or 0 V). Here's some example code:
+```
+/// Using method: void setMFPin(bool value);
+
+RTC.setMFPin(0); // Sets the MFP pin to 0 V
+
+RTC.setMFPin(1); // Sets the MFP pin to Vcc
+```
 # Alarms
 ## Alarm Basics
 The alarm functionality of the MCP794xx series RTCs can be simple, or a bit more involved. The Kraztech MCP794xx module has two alarms. They can work separately, or in conjunction with each other for some more advanced functionality.
-# MFP
 # Storing Data
 # Reading Data
