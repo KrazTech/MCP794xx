@@ -24,13 +24,13 @@ void setup() {
 	//rtc1.setHours24(11);		// Set the time to 1100 (24h format)
 	rtc1.setMinutes(39);		// Set the minutes to 39
 	rtc1.setSeconds(45);		// Set the second to 45
-	
+
 	// You can also set the time in a single function call
 	rtc1.setTime12(11, false, 39, 45);			// Set the time in 12h format
 	//rtc1.setTime24(11, 39, 45);				// Set the time in 24h format
 
-	
-	
+
+
 	rtc1.setYear(18);			// Set the year to 18
 	rtc1.setMonth(_FEB);		// Set the Month
 	rtc1.setDate(23);			// Set the date (0-31)
@@ -38,7 +38,7 @@ void setup() {
 
 	// You can also set the date in a single function call
 	rtc1.setCalendar(18, _FEB, 23);	// Set the calendar, weekday must be set seperately
-	rtc1.setWeekday(_THURS);		// Set the weekday.
+	rtc1.setWeekday(_THUR);		// Set the weekday.
 
 	rtc1.start();				// Turn on the clock, begins tracking time
 

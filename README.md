@@ -27,6 +27,8 @@ Should you have any questions regarding licensing, shoot us an email at <A href=
 ## Version History
 
 <ul>
+  <li><b>v1.1</b> - First Error Correction, Added Bug Fixes</li>
   <li><b>v1.0</b> - Initial Release</li>
 </ul>
 
+Last Major update: 2018-11-10

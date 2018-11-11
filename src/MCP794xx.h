@@ -1,24 +1,24 @@
 /**
  * @file MXP794xx.h
- * 
+ *
  * This is part of Kraztech's MCP794xx driver for the Arduino platform.
  * it has been written to work with the MCP794xx series of RTC ICs from
  * Microchip.
- * 
+ *
  * This board uses I2C to communicate between the arduino and the board.
- * 
+ *
  * Kraztech invests time and resources providing this open source code,
  * please support us by purchasing from Kraztech!
- * 
+ *
  * Written by Chris Krasnichuk
- * 
+ *
 */
-
-#include <Wire.h>
-#include <HardwareSerial.h>
 
 #ifndef _MCP794xx_h
 #define _MCP794xx_h
+
+#include <Wire.h>
+#include <HardwareSerial.h>
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
@@ -223,7 +223,7 @@ enum sqWaveConfig {
 	_1Hz	///< Configures Squarewave output at ~1 kHz
 };
 
-/** \class MCP794xx 
+/** \class MCP794xx
 	\brief Container for the MCP794xx functions
 	This class is used to contain all the interacting functions
 	within an object.
@@ -251,11 +251,11 @@ public:
 	*/
 	void setHours24(int hour);										///< Set the hour in 24 Hour format
 	/**
-	\param minute the minute to be set. 
+	\param minute the minute to be set.
 	*/
 	void setMinutes(int minute);									///< Set the minutes
 	/**
-	\param second the second to be set. 
+	\param second the second to be set.
 	*/
 	void setSeconds(int second);									///< Set the seconds
 	/**
@@ -296,7 +296,7 @@ public:
 	/** Returns the hour (returns hour, for 12 hour format check PM variable)
 	 * \return the hour
 	 */
-	int getHours();	
+	int getHours();
 	/** Returns the minute of the hour
 	 * \return the minute
 	 */
@@ -316,7 +316,7 @@ public:
 	/** Returns the day of the month
 	 * \return the day of the month
 	 */
-	int getDate();	
+	int getDate();
 
 	/** Returns the weekday
 	 * \return the day of the week
@@ -377,12 +377,16 @@ public:
 	void setAlarmAll24(bool alarmSelect, int month, int date, int weekday, int hours, int minutes, int seconds);   				///< Set alarm 0/1 to trigger on a match of seconds, minutes, hours, weekday, day, and month
 	/**
 	\param alarmSelect used to select which alarm to enable
-	*/					
+	*/
 	void enableAlarm(bool alarmSelect);								///< Enable alarm 0/1
 	/**
 	\param alarmSelect used to select which alarm's interrupt flag to clear
 	*/
 	void clearFlag(bool alarmSelect);								///< Clears Alarm Interrupt Flag
+	/**
+	\param polarity used to set the alarm polarity of the RTC.
+	*/
+	void  setAlarmPolarity(bool polarity);					///< Configures the alarm polarity, default is 0
 	/**
 	\param alarmSelect used to select which alarm to disable
 	*/
@@ -395,30 +399,30 @@ public:
  		|ALM1IF|3 BITS FOR ALM1 MATCH CONFIG|ALM0IF|3 BITS FOR ALM0 MATCH CONFIG|
 
 		performing a bitwise AND (&) operation using the following masks:
-				
+
 		_0statusIF
 		_0statusMask
 		_0matchSec
 		_0matchMin
 		_0matchHours
-		_0matchWeekday	
-		_0matchDate			
-		_0matchAll			
-		_1statusIF			
-		_1statusMask		
-		_1matchSec			
-		_1matchMin			
-		_1matchHours		
-		_1matchWeekday	
-		_1matchDate			
-		_1matchAll	
+		_0matchWeekday
+		_0matchDate
+		_0matchAll
+		_1statusIF
+		_1statusMask
+		_1matchSec
+		_1matchMin
+		_1matchHours
+		_1matchWeekday
+		_1matchDate
+		_1matchAll
 
 		Will indicate which alarm went off and the match conditions.
 
 		\return formatted byte containing flags indicating which alarm went off and why
 
 	*/
-	byte checkAlarm();												
+	byte checkAlarm();
 
 	/** \fn getPwrDownHours
 	 	Returns the hour when the Vin power was cut-off
@@ -429,8 +433,8 @@ public:
 	*/
 	int getPwrDownHours();
 	/** Returns the minute when the Vin power was cut-off
-	 * \return the minute when when power was cut-off to the board 
-	 */										
+	 * \return the minute when when power was cut-off to the board
+	 */
 	int getPwrDownMinutes();
 	/** Returns the month when the Vin power was cut-off
 	 * \return the month when the pwoer was cut-off to the board
@@ -439,11 +443,11 @@ public:
 	/** Returns the day of the month when Vin power was cut-off
 	 * \return the day of the month when power was cut-off to the baord
 	 */
-	int getPwrDownDate(); 
+	int getPwrDownDate();
 	/** Returns the day of the week (1-7) when Vin power was cut-off
 	 * \return the day of the week when power was cut-off to the board
 	 */
-	int getPwrDownWeekday(); 
+	int getPwrDownWeekday();
 
 	/** \fn getPwrUpHours
 	 	Returns the hour when the Vin power was applied
@@ -452,9 +456,9 @@ public:
 		\return the hour when power was applied to the board
 	*/
 	int getPwrUpHours();
-	/** Returns the minute when the Vin power was applied 
+	/** Returns the minute when the Vin power was applied
 	 * \return the minute when power was applied to the board
-	 */											
+	 */
 	int getPwrUpMinutes();
 	/** Returns the month when the Vin power was applied
 	 * \return the month when power was applied to the board
@@ -463,12 +467,14 @@ public:
 	/** Returns the day of the month when Vin power was applied
 	 * \return the day of the month when power was applied to the board
 	 */
-	int getPwrUpDate();	
+	int getPwrUpDate();
 	/** Returns the day of the week (1-7) when Vin power was applied
 	 * \return the day of the week when power was applied to the board
 	 */
 	int getPwrUpWeekday();
-
+	/** Arms the power fail/on time for the next aquisition.
+	*/
+	void armPwrTimestamp();
 	/** Sets the value of the Multifunction pin, disables alarms
 	 * \param value the boolean value (0/1) to apply to the MFPin.
 	 */
@@ -506,4 +512,3 @@ private:
 };
 
 #endif
-

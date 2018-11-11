@@ -1,20 +1,20 @@
 /**
  * @file MCP794xx.cpp
- * 
+ *
  * @mainpage Kraztech MCP794xx RTC Module Driver
- * 
+ *
  * @section intro_sec Introduction
- * 
+ *
  * This is the documentation for the Kraztech's MCP794xx driver for the Arduino platform.
  * The goal of the driver is to keep it as simple and straight forward as possible
  * so that beginners can easily and quickly pickup the board and begin having fun
  * with all the time tracking possibilities!
- * 
+ *
  * @section author Author
- * 
+ *
  * Written by Chris Krasnichuk at Kraztech
- * 
- * 
+ *
+ *
 */
 
 #include "MCP794xx.h"
@@ -74,7 +74,7 @@ void MCP794xx::setHours12(int hour, bool _PM)
 
 	Wire.beginTransmission(_MCP794xxaddress);			// transmit to RTC
 	Wire.write(_timeHourReg);							// Point to Register defined by Address
-	Wire.write(decToBcd(hour) | (_PM ? 0x60 : 0x40));	// write the format and 
+	Wire.write(decToBcd(hour) | (_PM ? 0x60 : 0x40));	// write the format and
 	Wire.endTransmission();								// stop transmitting
 
 	//Errata Fix
@@ -92,7 +92,7 @@ void MCP794xx::setHours24(int hour)
 	else if (hour > 23) {
 		hour = 23;
 	}
-	
+
 	Wire.beginTransmission(_MCP794xxaddress);			// transmit to RTC
 	Wire.write(_timeHourReg);							// Point to Register defined by Address
 	Wire.write(decToBcd(hour) & 0xBF);					// write the Hour.
@@ -136,7 +136,7 @@ void MCP794xx::setTime12(int hour, bool _PM, int minute, int second)
 	Wire.write(_timeSecReg);							// Point to Register defined by Address
 	Wire.write(decToBcd(second) & 0x7F);				// Write second register and turn time off
 	Wire.write(decToBcd(minute));						// Write the minute register
-	Wire.write(decToBcd(hour) | (_PM ? 0x60 : 0x40));	// write the format and 
+	Wire.write(decToBcd(hour) | (_PM ? 0x60 : 0x40));	// write the format and
 	Wire.endTransmission();								// stop transmitting
 }
 void MCP794xx::setTime24(int hour, int minute, int second)
@@ -157,7 +157,7 @@ void MCP794xx::setTime24(int hour, int minute, int second)
 	Wire.write(_timeSecReg);							// Point to Register defined by Address
 	Wire.write(decToBcd(second) & 0x7F);				// Write second register and turn time off
 	Wire.write(decToBcd(minute));						// Write the minute register
-	Wire.write(decToBcd(hour) & 0xBF);					// write the format and 
+	Wire.write(decToBcd(hour) & 0xBF);					// write the format and
 	Wire.endTransmission();								// stop transmitting
 }
 void MCP794xx::setYear(int year)
@@ -299,7 +299,7 @@ void MCP794xx::setAlarmHours12(bool alarmSelect, int hours, bool _PM)
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(baseReg + _alarmHourReg);					// Point to Register defined by Address
-	Wire.write(decToBcd(hours) | (_PM ? 0x20 : 0x00));		//  
+	Wire.write(decToBcd(hours) | (_PM ? 0x20 : 0x00));		//
 	Wire.endTransmission();									// stop transmittin
 
 	byte configBuff = readByte(baseReg + _alarmWeekdayReg);
@@ -308,7 +308,7 @@ void MCP794xx::setAlarmHours12(bool alarmSelect, int hours, bool _PM)
 
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(baseReg + _alarmWeekdayReg);					// Point to Register defined by Address
-	Wire.write(configBuff);									//  
+	Wire.write(configBuff);									//
 	Wire.endTransmission();									// stop transmittin
 }
 void MCP794xx::setAlarmHours24(bool alarmSelect, int hours)
@@ -325,7 +325,7 @@ void MCP794xx::setAlarmHours24(bool alarmSelect, int hours)
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(baseReg + _alarmHourReg);					// Point to Register defined by Address
-	Wire.write(decToBcd(hours));							//  
+	Wire.write(decToBcd(hours));							//
 	Wire.endTransmission();									// stop transmittin
 
 	byte configBuff = readByte(baseReg + _alarmWeekdayReg);
@@ -334,7 +334,7 @@ void MCP794xx::setAlarmHours24(bool alarmSelect, int hours)
 
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(baseReg + _alarmWeekdayReg);					// Point to Register defined by Address
-	Wire.write(configBuff);									//  
+	Wire.write(configBuff);									//
 	Wire.endTransmission();									// stop transmittin
 
 
@@ -348,7 +348,7 @@ void MCP794xx::setAlarmMinutes(bool alarmSelect, int minutes)
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(baseReg + _alarmMinReg);						// Point to Register defined by Address
-	Wire.write(decToBcd(minutes));							//  
+	Wire.write(decToBcd(minutes));							//
 	Wire.endTransmission();									// stop transmittin
 
 	byte configBuff = readByte((baseReg + _alarmWeekdayReg)) & 0x87;
@@ -357,7 +357,7 @@ void MCP794xx::setAlarmMinutes(bool alarmSelect, int minutes)
 
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(baseReg + _alarmWeekdayReg);					// Point to Register defined by Address
-	Wire.write(configBuff);									//  
+	Wire.write(configBuff);									//
 	Wire.endTransmission();									// stop transmittin
 }
 void MCP794xx::setAlarmSeconds(bool alarmSelect, int seconds)
@@ -369,7 +369,7 @@ void MCP794xx::setAlarmSeconds(bool alarmSelect, int seconds)
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(baseReg + _alarmSecReg);						// Point to Register defined by Address
-	Wire.write(decToBcd(seconds));							//  
+	Wire.write(decToBcd(seconds));							//
 	Wire.endTransmission();									// stop transmittin
 
 	byte configBuff = readByte(baseReg + _alarmWeekdayReg);
@@ -378,7 +378,7 @@ void MCP794xx::setAlarmSeconds(bool alarmSelect, int seconds)
 
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(baseReg + _alarmWeekdayReg);					// Point to Register defined by Address
-	Wire.write(configBuff);									//  
+	Wire.write(configBuff);									//
 	Wire.endTransmission();									// stop transmittin
 }
 void MCP794xx::setAlarmWeekday(bool alarmSelect, int weekday)
@@ -392,7 +392,7 @@ void MCP794xx::setAlarmWeekday(bool alarmSelect, int weekday)
 	configBuff &= 0x80;
 	Wire.beginTransmission(_MCP794xxaddress);						// transmit to RTC
 	Wire.write(baseReg + _alarmWeekdayReg);							// Point to Register defined by Address
-	Wire.write(configBuff | decToBcd(weekday) | _alarmMatchWeekday);		//  
+	Wire.write(configBuff | decToBcd(weekday) | _alarmMatchWeekday);		//
 	Wire.endTransmission();											// stop transmittin
 }
 void MCP794xx::setAlarmDate(bool alarmSelect, int date)
@@ -404,7 +404,7 @@ void MCP794xx::setAlarmDate(bool alarmSelect, int date)
 	byte baseReg = alarmSelect ? _alarm1Reg : _alarm0Reg;	// Select the alarm base register
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(baseReg + _alarmDateReg);					// Point to Register defined by Address
-	Wire.write(decToBcd(date));								//  
+	Wire.write(decToBcd(date));								//
 	Wire.endTransmission();									// stop transmittin
 
 	byte configBuff = readByte(baseReg + _alarmWeekdayReg);
@@ -413,7 +413,7 @@ void MCP794xx::setAlarmDate(bool alarmSelect, int date)
 
 	Wire.beginTransmission(_MCP794xxaddress);				// transmit to RTC
 	Wire.write(baseReg + _alarmWeekdayReg);					// Point to Register defined by Address
-	Wire.write(configBuff);									//  
+	Wire.write(configBuff);									//
 	Wire.endTransmission();									// stop transmittin
 }
 void MCP794xx::setAlarmAll12(bool alarmSelect, int month, int date, int weekday, int hours, bool _PM, int minutes, int seconds)
@@ -509,6 +509,15 @@ void MCP794xx::clearFlag(bool alarmSelect)
 		writeByte(_alarm0WeekdayReg, (regBuff & 0xf7)); // Clear IF
 	}
 
+}
+void MCP794xx::setAlarmPolarity(bool polarity)
+{
+	byte regBuff = readByte(_alarm0WeekdayReg) & 0x7F; // Clear ALMPOL bit
+	if (polarity)
+	{
+		regBuff &= 0x80;
+	}
+	writeByte(_alarm0WeekdayReg, regBuff);
 }
 void MCP794xx::disableAlarm(bool alarmSelect)
 {
@@ -683,6 +692,12 @@ int MCP794xx::getPwrUpHours()
 
 	return bcdToDec(hourBuff);			// Return the value of the hour
 }
+void MCP794xx::armPwrTimestamp()
+{
+	byte regBuff = readByte(_dateWeekdayReg) & 0xEF;
+	writeByte(_dateWeekdayReg, regBuff);
+
+}
 int MCP794xx::getPwrUpMinutes()
 {
 	return bcdToDec(readByte(_pwrUpMinReg));
@@ -750,7 +765,7 @@ void MCP794xx::writeData(byte reg, byte* buffer, int numBytes)
 	for (int i = 0; i < numBytes;i++)
 	{
 		Wire.write(buffer[i]);
-		if ((reg + i) == _dat0x3F) break;				// Prevent an overflow condition 
+		if ((reg + i) == _dat0x3F) break;				// Prevent an overflow condition
 	}
 	Wire.endTransmission();								// stop transmitting
 }
@@ -770,7 +785,7 @@ void MCP794xx::readData(byte reg, byte* buffer, int numBytes)
 			for (int i = 0; i < numBytes; i++)
 			{
 				buffer[(j * 32) + i] = Wire.read();
-				if ((reg + (j * 32) + i) >= _dat0x3F) break;				// Prevent an overflow condition 
+				if ((reg + (j * 32) + i) >= _dat0x3F) break;				// Prevent an overflow condition
 			}
 		}
 	}
@@ -779,7 +794,7 @@ void MCP794xx::readData(byte reg, byte* buffer, int numBytes)
 		for (int i = 0; i < numBytes;i++)
 		{
 			buffer[i] = Wire.read();
-			if ((reg + i) >= _dat0x3F) break;				// Prevent an overflow condition 
+			if ((reg + i) >= _dat0x3F) break;				// Prevent an overflow condition
 		}
 	}
 	Wire.endTransmission();								// stop transmitting
@@ -824,4 +839,3 @@ byte MCP794xx::decToBcd(byte val)
 {
 	return(((val / 10) << 4) | (val % 10));
 }
-
