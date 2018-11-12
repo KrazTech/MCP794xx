@@ -1,37 +1,37 @@
 # Table of Contents
-1. [Introduction](#introduction)
-2. [Setting up the library](#librarySetup)
-3. [Initializing](#initialize)
-4. [Setting the Time](#timeSet)
-    1. [Just set the time](#timeJustSet)
-        1. [24 hour format](#timeJustSet24H)
-        2. [12 hour format](#timeJustSet12H)
-    2. [Setting the Hour](#timeJustSet)
-        1. [24 hour format](#timeSetHour24H)
-        2. [12 hour format](#timeSetHour12H)
-    3. [Setting the minutes](#timeSetMinute)
-    4. [Setting the seconds](#timeSetSecond)
-5. [Setting the Calendar](#dateSetCalendar)
-    1. [Just set the Calendar](#dateJustSetCalendar)
-    2. [Setting the Year](#dateSetYear)
-    3. [Setting the Month](#dateSetMonth)
-    4. [Setting the Date](#dateSetDate)
-    5. [Setting the Weekday](#dateSetWeekday)
-6. [Reading the Time](#timeRead)
-    1. [Reading the Hour]
-    2. [Reading the Minute]
-    3. [Reading the Second]
-7. [Reading the Calendar]
-    1. [Reading the Year]
-    2. [Reading the Month]
-    3. [Reading the Date]
-    4. [Reading the Weekday]
-8. [Multifunction Pins]
-    1. [Square Wave Output]
-    2. [General Purpose Output]
-9. [Alarms]
-10. [Storing Data]
-11. [Reading Data]
+* [Introduction](#introduction)
+* [Setting up the library](#librarySetup)
+* [Initializing](#initialize)
+* [Setting the Time](#timeSet)
+    * [Just set the time](#timeJustSet)
+        * [24 hour format](#timeJustSet24H)
+        * [12 hour format](#timeJustSet12H)
+    * [Setting the Hour](#timeJustSet)
+        * [24 hour format](#timeSetHour24H)
+        * [12 hour format](#timeSetHour12H)
+    * [Setting the minutes](#timeSetMinute)
+    * [Setting the seconds](#timeSetSecond)
+* [Setting the Calendar](#dateSetCalendar)
+    * [Just set the Calendar](#dateJustSetCalendar)
+    * [Setting the Year](#dateSetYear)
+    * [Setting the Month](#dateSetMonth)
+    * [Setting the Date](#dateSetDate)
+    * [Setting the Weekday](#dateSetWeekday)
+* [Reading the Time](#timeRead)
+    * [Reading the Hour]
+    * [Reading the Minute]
+    * [Reading the Second]
+* [Reading the Calendar]
+    * [Reading the Year]
+    * [Reading the Month]
+    * [Reading the Date]
+    * [Reading the Weekday]
+* [Multifunction Pins]
+    * [Square Wave Output]
+    * [General Purpose Output]
+* [Alarms]
+* [Storing Data]
+* [Reading Data]
 
 <a name="introduction"></a>
 # Introduction
@@ -224,12 +224,64 @@ RTC.setWeekday(_FRI); // Sets the weekday to Friday
 <a name="timeRead"></a>
 # Reading the Time
 Reading the time off of the MCP794xx RTC Module is done by time component; hour, minute, second. The values are then returned by the function and therefore must be stored in a variable. Let's go through reading each time component off of the RTC.
-### Reading the Hour
+
+<a name="timeReadHour"></a>
+## Reading the Hour
+Reading the hour for both the 24 hour & 12 hour formats are the same. The only difference is in the 12 hour format, the status of the local **PM** class variable is updated with the RTC's **PM** status. Here are some examples showing the behaviour you would expect from the library:
+#### 24 hour format
+```
+/// Using method: int getHours();
+
+int hour; // Variable for the hour
+
+RTC.setHours24(3); // Sets the hour to 03:xx
+
+hour = RTC.getHours(); // Returns the value 3 and stores it in hour.
+```
+
+#### 12 hour format
+```
+/// Using method: int getHours();
+
+int hour; // Variable for the hour
+
+
+RTC.setHours12(6, true); // Sets the hour to 6 pm
+
+hour = RTC.getHours(); // Returns the value of 6 and stores it in hour.
+
+// RTC.PM will now be SET or "true" indicating that the hour was in the PM
 
 
 
-int getHours();
-int getMinutes();
+RTC.setHours12(6, false); // Sets the hour to 6 am
+
+hour = RTC.getHours(); // Returns the value of 6 and stores it in hour.
+
+// RTC.PM will now be UNSET or "false" indicating that the hour was in the AM
+
+```
+
+## Reading the Minute
+Reading the minutes slightly more straight forward than reading the hour because we're not dealing with the PM status bit. Here are a couple examples:
+```
+/// Using method: int getMinutes();
+
+int minute; // Variable for minute
+
+
+RTC.setMinutes(34); // Sets the minute to xx:34
+
+minute = RTC.getMinutes(); // Returns 34 and stores it in minute
+
+
+
+RTC.setMinutes(11); // Sets the minute to xx:11
+
+minute = RTC.getMinutes(); // Returns 11 and stores it in minute
+```
+
+
 int getSeconds();
 int getYear();
 int getMonth();
