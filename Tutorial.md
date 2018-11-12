@@ -18,17 +18,19 @@
     * [Setting the Date](#dateSetDate)
     * [Setting the Weekday](#dateSetWeekday)
 * [Reading the Time](#timeRead)
-    * [Reading the Hour]
-    * [Reading the Minute]
-    * [Reading the Second]
-* [Reading the Calendar]
-    * [Reading the Year]
-    * [Reading the Month]
-    * [Reading the Date]
-    * [Reading the Weekday]
-* [Multifunction Pins]
-    * [Square Wave Output]
-    * [General Purpose Output]
+    * [Reading the Hour](#timeReadHour)
+        * [24 hour format](#timeReadHour24H)
+        * [12 hour format](#timeReadHour12H)
+    * [Reading the Minute](#timeReadMinute)
+    * [Reading the Second](#timeReadSecond)
+* [Reading the Calendar](#dateReadCalendar)
+    * [Reading the Year](#dateReadYear)
+    * [Reading the Month](#dateReadMonth)
+    * [Reading the Date](#dateReadDate)
+    * [Reading the Weekday](#dateReadWeekday)
+* [Multifunction Pins](#MFP)
+    * [Square Wave Output](#MFPSquareWaveOutput)
+    * [General Purpose Output](#MFPGeneralPurpose)
 * [Alarms]
 * [Storing Data]
 * [Reading Data]
@@ -228,6 +230,7 @@ Reading the time off of the MCP794xx RTC Module is done by time component; hour,
 <a name="timeReadHour"></a>
 ## Reading the Hour
 Reading the hour for both the 24 hour & 12 hour formats are the same. The only difference is in the 12 hour format, the status of the local **PM** class variable is updated with the RTC's **PM** status. Here are some examples showing the behaviour you would expect from the library:
+<a name="timeReadHour24H"></a>
 #### 24 hour format
 ```
 /// Using method: int getHours();
@@ -238,7 +241,7 @@ RTC.setHours24(3); // Sets the hour to 03:xx
 
 hour = RTC.getHours(); // Returns the value 3 and stores it in hour.
 ```
-
+<a name="timeReadHour12H"></a>
 #### 12 hour format
 ```
 /// Using method: int getHours();
@@ -261,7 +264,7 @@ hour = RTC.getHours(); // Returns the value of 6 and stores it in hour.
 // RTC.PM will now be UNSET or "false" indicating that the hour was in the AM
 
 ```
-
+<a name="timeReadMinute"></a>
 ## Reading the Minute
 Reading the minutes slightly more straight forward than reading the hour because we're not dealing with the PM status bit. Here are a couple examples:
 ```
@@ -280,7 +283,7 @@ RTC.setMinutes(11); // Sets the minute to xx:11
 
 minute = RTC.getMinutes(); // Returns 11 and stores it in minute
 ```
-
+<a name="timeReadSecond"></a>
 ## Reading the Second
 Reading the seconds is as straight forward as reading the minute. Here are a couple examples:
 ```
@@ -299,9 +302,11 @@ RTC.setSeconds(11); // Sets the second to xx:xx:11
 
 second = RTC.getSeconds(); // Returns 11 and stores it in second
 ```
+<a name="dateReadCalendar"></a>
 # Reading the Calendar
 Reading the calendar is the same as reading time.
 
+<a name="dateReadYear"></a>
 ## Reading the Year
 ```
 /// Using method: int getYear();
@@ -313,6 +318,7 @@ RTC.setYear(34); // Sets the year to xx34
 
 year = RTC.getYear(); // Returns 34 and stores it in year
 ```
+<a name="dateReadMonth"></a>
 ## Reading the Month
 ```
 /// Using method: int getMonth();
@@ -329,6 +335,7 @@ RTC.setMonth(_NOV); // Sets the month to November
 
 month = RTC.getMonth(); // Returns 11 (_NOV) and stores it in month
 ```
+<a name="dateReadDate"></a>
 ## Reading the Date
 ```
 /// Using method: int getDate();
@@ -340,6 +347,7 @@ RTC.setDate(26); // Sets the 26'th of the month
 
 date = RTC.getDate(); // Returns 26 and stores it in date
 ```
+<a name="dateReadWeekday"></a>
 ## Reading the Weekday
 ```
 /// Using method: int getWeekday();
@@ -356,6 +364,7 @@ RTC.setWeekday(_FRI); // Sets the weekday to _FRI
 
 weekday = RTC.getWeekday(); // Returns 5 (_FRI) and stores it in weekday
 ```
+<a name="MFP"></a>
 # MFP
 The Multifunction Pin (MFP) is an output pin which the MCP794xx Module uses as either a General Purpose Output (we set the output value manually), an Alarm Interrupt Output (the pin becomes Asserted when an alarm goes off), or as a Square Wave Clock Output (a small selection of output frequencies). While it can perform all of these tasks, it can be configured for **one** at any time.
 
@@ -374,6 +383,7 @@ To put the table into plain english, all it says is:
 2. If one of the alarms are enabled, the MFP will be attached to their interrupt output signal.
 3. If neither the Square Wave Output nor the Alarms are enabled, then the MFP will default to a general purpose output pin which can be set via software.
 
+<a name="MFPSquareWaveOutput"></a>
 ### Square Wave output
 Since the Square Wave output will take precedent over all other functionality, we'll cover that first. The square wave output can be set to 4 different output frequencies which are connected to Enumerations for simplicity.
 
@@ -402,6 +412,7 @@ RTC.setMFPinSquareWavE(_OFF);   // Disables the Squarewave output
 
 Remember that once the Square Wave is activated it will take control of the MFP until disabled. Meaning that it must be disabled before the alarms will assert any interrupt signals on the MFP.
 
+<a name="MFPGeneralPurpose"></a>
 ### General Purpose output
 Before getting into the involved topic of using the Alarms, we'll quickly cover the use of general purpose output. This just lets us to set the MFP to either a logic high (1 or Vcc) or logic low (0 or 0 V). Here's some example code:
 ```
@@ -411,6 +422,7 @@ RTC.setMFPin(0); // Sets the MFP pin to 0 V
 
 RTC.setMFPin(1); // Sets the MFP pin to Vcc
 ```
+<a name="Alarms"></a>
 # Alarms
 ## Alarm Basics
 The alarm functionality of the MCP794xx series RTCs can be simple, or a bit more involved. The Kraztech MCP794xx module has two alarms. They can work separately, or in conjunction with each other for some more advanced functionality.
