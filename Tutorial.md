@@ -2,34 +2,36 @@
 1. [Introduction](#introduction)
 2. [Setting up the library](#librarySetup)
 3. [Initializing](#initialize)
-4. Setting the Time
-    1. Just set the time
-    2. Setting the Hour
-        1. 24 hour format
-        2. 12 hour format
-    3. Setting the minutes
-    4. Setting the seconds
-5. Setting the Calendar
-    1. Just set the Calendar
-    2. Setting the Year
-    3. Setting the Month
-    4. Setting the Date
-    5. Setting the Weekday
-6. Reading the Time
-    1. Reading the Hour
-    2. Reading the Minute
-    3. Reading the Second
-7. Reading the Calendar
-    1. Reading the Year
-    2. Reading the Month
-    3. Reading the Date
-    4. Reading the Weekday
-8. Multifunction Pin
-    1. Square Wave Output
-    2. General Purpose Output
-9. Alarms
-10. Storing Data
-11. Reading Data
+4. [Setting the Time](#timeSet)
+    1. [Just set the time](#timeJustSet)
+        1. [24 hour format](#timeJustSet24H)
+        2. [12 hour format](#timeJustSet12H)
+    2. [Setting the Hour](#timeJustSet)
+        1. [24 hour format](#timeSetHour24H)
+        2. [12 hour format](#timeSetHour12H)
+    3. [Setting the minutes](#timeSetMinute)
+    4. [Setting the seconds](#timeSetSecond)
+5. [Setting the Calendar](#dateSetCalendar)
+    1. [Just set the Calendar](#dateJustSetCalendar)
+    2. [Setting the Year](#dateSetYear)
+    3. [Setting the Month](#dateSetMonth)
+    4. [Setting the Date](#dateSetDate)
+    5. [Setting the Weekday](#dateSetWeekday)
+6. [Reading the Time](#timeRead)
+    1. [Reading the Hour]
+    2. [Reading the Minute]
+    3. [Reading the Second]
+7. [Reading the Calendar]
+    1. [Reading the Year]
+    2. [Reading the Month]
+    3. [Reading the Date]
+    4. [Reading the Weekday]
+8. [Multifunction Pins]
+    1. [Square Wave Output]
+    2. [General Purpose Output]
+9. [Alarms]
+10. [Storing Data]
+11. [Reading Data]
 
 <a name="introduction"></a>
 # Introduction
@@ -61,11 +63,15 @@ MCP794xx RTC; // Creates an RTC object
 MCP794xx realTimeClock; // Also creates an RTC Object
 ```
 Once the MCP794xx object has been created, you can now call object methods to interact with the physical MCP794xx module.
-# Setting the Time <a name="timeSet"></a>
+
+<a name="timeSet"></a>
+# Setting the Time
 Lets get started with the one thing an RTC is really meant to do; time. The MCP794xx can operate in both 12 and 24 hour formats. The time can be set in a single method call, or by setting each component (hour, minute, second) separately.
-#### Just set the time <a name="timeJustSet"></a>
+ <a name="timeJustSet"></a>
+#### Just set the time
 We'll start off by setting the time in a single method call. I would guess that this would be the primary way most people will set the time. It's simple, straight forward, and gets the job done in a single line. Here are some examples of setting the time in both 24 & 12 hour formats.
-##### 24 Hour Format <a name="timeJustSet24H"></a>
+<a name="timeJustSet24H"></a>
+##### 24 Hour Format
 ```
 /// Using method: void setTime24(int hour, int minute, int second);
 
@@ -74,7 +80,8 @@ RTC.setTime24(5, 23, 10); // Sets the time to 5:23:10 (HH:MM:SS)
 RTC.setTime24(19, 31, 45); // Sets the time to 19:31:45 (HH:MM:SS)
 
 ```
-##### 12 Hour Format  <a name="timeJustSet12H"></a>
+<a name="timeJustSet12H"></a>
+##### 12 Hour Format  
 ```
 /// Using method: void setTime12(int hour, bool _PM, int minute, int second);
 
@@ -86,7 +93,9 @@ RTC.setTime12(5, 1, 32, 12); // Sets the time to 5:32:12 pm (HH:MM:SS)
 
 RTC.setTime12(10, true, 11, 43); // Sets the time to 10:11:43 pm (HH:MM:SS)
 ```
+<a name="timeSetHour"></a>
 ## Setting the hour
+<a name="timeSetHour24H"></a>
 ### 24 Hour format
 Setting up the Module to operate in 24 hour format is quite easy. The only thing that really determines if the RTC is operating in either 12 or 24 hour format is, well, the hour! Therefore the only difference between the two operations are the methods called to set the hour (at least for the scope of setting time). Here's an example for 24 hour format:
 ```
@@ -96,6 +105,7 @@ RTC.setHours24(0); // Sets the hour to 00:mm:ss
 
 RTC.setHours24(14); // Sets the hour to 14:mm:ss
 ```
+<a name="timeSetHour12H"></a>
 ### 12 Hour format
 Setting up the module to operate in 12 hour format is, again, straight forward. Compared to the 24 hours format, we do need to account for if the hour is in the PM or AM. This is communicated by using a boolean parameter in the method call. Here's an example:
 ```
@@ -109,6 +119,7 @@ RTC.setHours12(5, 1); // Sets the hour to 5:mm:ss pm
 
 RTC.setHours12(9, true); // Sets the hour to 9:mm:ss pm
 ```
+<a name="timeSetMinute"></a>
 ## Setting the minutes
 Setting the minutes on the RTC module is the same for both hour formats. Here are a couple examples:
 ```
@@ -118,6 +129,7 @@ RTC.setMinutes(32); // Sets the minute to hh:32:ss
 
 RTC.setMinutes(12); // Sets the minute to hh:12:ss
 ```
+<a name="timeSetSecond"></a>
 ## Setting the seconds
 Setting the seconds on the RTC module is the same for both hour formats. Here are a couple examples:
 ```
@@ -127,8 +139,10 @@ RTC.setSeconds(42); // Sets seconds to hh:mm:42
 
 RTC.setSeconds(12); // Sets seconds to hh:mm:12
 ```
+<a name="dateSetCalendar"></a>
 # Setting the Calendar
 Another primary feature of the MCP794xx RTC module is the date. Like most RTCs out there, we can accurately keep track of the date (at least until 2399!) along side time. The Kraztech library can set the date in one go (expect the weekday), or individually by each component (year, month, day).
+<a name="dateJustSetCalendar"></a>
 #### Just Setting the Calendar
 Here we can set the calendar's year, month, and date in a single function call. Note that the enumeration used in the following example is fully described under the *Setting the Month* section. Here are a couple examples:
 ```
@@ -138,6 +152,7 @@ RTC.setCalendar(18, 11, 23);  // Sets the date to year xx18, November the 23'rd
 
 RTC.setCalendar(23, _APR, 6); // Sets the date to year xx23, April the 6'th
 ```
+<a name="dateSetYear"></a>
 ## Setting the Year
 Setting the year is done by tracking the last 2 digits of the year. For example, if we want to set the year to **2018**, we would set the year to **18** to indicate the last two digits of that year. We can't keep track of which century or millennia is it; darn. Here are a couple examples showing how we can set the year:
 ```
@@ -147,6 +162,7 @@ RTC.setYear(56);  // Sets the year to xx56
 
 RTC.setYear(13);  // Sets the year to xx13
 ```
+<a name="dateSetMonth"></a>
 ## Setting the Month
 Setting the month is just as simple as everything else. But the exciting thing about setting is the month is that we can use either the numerical value for the month (1-12) or an enumeration to make things a bit more readable. Here is a list of the numerations that we can use to set the date:
 
@@ -173,6 +189,7 @@ RTC.setMonth(7);    // Sets the month to July
 
 RTC.setMonth(_AUG); // Sets the month to August
 ```
+<a name="dateSetDate"></a>
 ## Setting the Date
 Onwards to setting the date. Here we're talking about the date of the month (1-31). Just like with everything else, it's straight forward. Here are a couple examples:
 ```
@@ -182,6 +199,7 @@ RTC.setDate(12);  // Sets the date to the 12'th of the month
 
 RTC.setDate(20);  // Sets the date to the 20'th of the month
 ```
+<a name="dateSetWeekday"></a>
 ## Setting the Weekday
 The weekday is an additional calendar component that the RTC can keep track of. The connection between which day of the week it is and the rest of the calendar is a little loose. The day of the week will increment on a day roll over (when the hour goes from 23->0 (24h format) or 11pm -> 12am(12h format)). Allowing us to align the day of the week which ever way we would like. All this means is that November 1'st can be set to Monday, Tuesday, Wednesday, Thursday, Friday,... I think you get the point. While we can set the day of the week via numerical values (1-7), this can quickly become confusing. So the library includes an enumeration to simplify keeping track of the weekday. Here is a list of the enumeration:
 
@@ -203,6 +221,7 @@ RTC.setWeekday(1);    // Sets the weekday to 1, with the enum it's Monday
 
 RTC.setWeekday(_FRI); // Sets the weekday to Friday
 ```
+<a name="timeRead"></a>
 # Reading the Time
 Reading the time off of the MCP794xx RTC Module is done by time component; hour, minute, second. The values are then returned by the function and therefore must be stored in a variable. Let's go through reading each time component off of the RTC.
 ### Reading the Hour
