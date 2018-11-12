@@ -281,14 +281,81 @@ RTC.setMinutes(11); // Sets the minute to xx:11
 minute = RTC.getMinutes(); // Returns 11 and stores it in minute
 ```
 
+## Reading the Second
+Reading the seconds is as straight forward as reading the minute. Here are a couple examples:
+```
+/// Using method: int getSeconds();
 
-int getSeconds();
-int getYear();
-int getMonth();
-int getDate();
-int getWeekday();
+int second; // Variable for second
 
+
+RTC.setSeconds(34); // Sets the second to xx:xx:34
+
+second = RTC.getSeconds(); // Returns 34 and stores it in second
+
+
+
+RTC.setSeconds(11); // Sets the second to xx:xx:11
+
+second = RTC.getSeconds(); // Returns 11 and stores it in second
+```
 # Reading the Calendar
+Reading the calendar is the same as reading time.
+
+## Reading the Year
+```
+/// Using method: int getYear();
+
+int year; // Variable for year
+
+
+RTC.setYear(34); // Sets the year to xx34
+
+year = RTC.getYear(); // Returns 34 and stores it in year
+```
+## Reading the Month
+```
+/// Using method: int getMonth();
+
+int month; // Variable for month
+
+
+RTC.setMonth(4); // Sets the month to April
+
+month = RTC.getMonth(); // Returns 4 and stores it in month
+
+
+RTC.setMonth(_NOV); // Sets the month to November
+
+month = RTC.getMonth(); // Returns 11 (_NOV) and stores it in month
+```
+## Reading the Date
+```
+/// Using method: int getDate();
+
+int date; // Variable for date
+
+
+RTC.setDate(26); // Sets the 26'th of the month
+
+date = RTC.getDate(); // Returns 26 and stores it in date
+```
+## Reading the Weekday
+```
+/// Using method: int getWeekday();
+
+int weekday; // Variable for weekday
+
+
+RTC.setWeekday(2); // Sets the weekday to 2, (_TUE in this library)
+
+weekday = RTC.getWeekday(); // Returns 2 and stores it in weekday
+
+
+RTC.setWeekday(_FRI); // Sets the weekday to _FRI
+
+weekday = RTC.getWeekday(); // Returns 5 (_FRI) and stores it in weekday
+```
 # MFP
 The Multifunction Pin (MFP) is an output pin which the MCP794xx Module uses as either a General Purpose Output (we set the output value manually), an Alarm Interrupt Output (the pin becomes Asserted when an alarm goes off), or as a Square Wave Clock Output (a small selection of output frequencies). While it can perform all of these tasks, it can be configured for **one** at any time.
 
