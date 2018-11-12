@@ -1,6 +1,40 @@
-# Introduction
+# Table of Contents
+1. [Introduction](#introduction)
+2. [Setting up the library](#librarySetup)
+3. [Initializing](#initialize)
+4. Setting the Time
+  1. Just set the time
+  2. Setting the Hour
+    1. 24 hour format
+    2. 12 hour format
+  3. Setting the minutes
+  4. Setting the seconds
+5. Setting the Calendar
+  1. Just set the Calendar
+  2. Setting the Year
+  3. Setting the Month
+  4. Setting the Date
+  5. Setting the Weekday
+6. Reading the Time
+  1. Reading the Hour
+  2. Reading the Minute
+  3. Reading the Second
+7. Reading the Calendar
+  1. Reading the Year
+  2. Reading the Month
+  3. Reading the Date
+  4. Reading the Weekday
+8. Multifunction Pin
+  1. Square Wave Output
+  2. General Purpose Output
+9. Alarms
+10. Storing Data
+11. Reading Data
+
+
+# Introduction <a name="introduction"></a>
 Thanks for either buying a Kraztech MCP794xx RTC module, or simply to be using my Arduino library written for the Microchip MCP794xx RTC Series. This guide is intended as a tutorial going through the entire Arduino library's use. By the end you should be able to fully utilize the functionality found on the Kraztech MCP794xx RTC Module.
-# Setting up the library
+# Setting up the library <a name="librarySetup"></a>
 Adding the MCP794xx library to your Arduino Environment isn't much of a task. The first step you will want to do is to copy the library files under this repositories `/src` directory. These files should then be places under your Arduino's library folder. Typically this folder is located at: `~/Documents/Arduino/libraries`.
 By the end, you should have a folder containing both the `MCP794xx.cpp` and the `MCP794xx.h` files. Personally, I simply cloned the Git Repository and copied that folder into my Arduino library folder under `My Documents`. Here's what my directory ended up looking like:
 ```
@@ -15,7 +49,7 @@ By the end, you should have a folder containing both the `MCP794xx.cpp` and the 
 ```
 Now, most of these files aren't required, the ones you really need are the files under the `/src` directory to make the library work.
 
-# Initializing
+# Initializing <a name="initialize"></a>
 The MCP794xx library uses a class object to interact with the module via I2C. The very first step in interacting with the RTC is to first instantiate the object. All that means is we want to create an MCP794xx object, by example:
 ```
 MCP794xx RTC; // Creates an RTC object
@@ -23,11 +57,11 @@ MCP794xx RTC; // Creates an RTC object
 MCP794xx realTimeClock; // Also creates an RTC Object
 ```
 Once the MCP794xx object has been created, you can now call object methods to interact with the physical MCP794xx module.
-# Setting the Time
+# Setting the Time <a name="timeSet"></a>
 Lets get started with the one thing an RTC is really meant to do; time. The MCP794xx can operate in both 12 and 24 hour formats. The time can be set in a single method call, or by setting each component (hour, minute, second) separately.
-#### Just set the time
+#### Just set the time <a name="timeJustSet"></a>
 We'll start off by setting the time in a single method call. I would guess that this would be the primary way most people will set the time. It's simple, straight forward, and gets the job done in a single line. Here are some examples of setting the time in both 24 & 12 hour formats.
-##### 24 Hour Format
+##### 24 Hour Format <a name="timeJustSet24H"></a>
 ```
 /// Using method: void setTime24(int hour, int minute, int second);
 
@@ -36,7 +70,7 @@ RTC.setTime24(5, 23, 10); // Sets the time to 5:23:10 (HH:MM:SS)
 RTC.setTime24(19, 31, 45); // Sets the time to 19:31:45 (HH:MM:SS)
 
 ```
-##### 12 Hour Format
+##### 12 Hour Format  <a name="timeJustSet12H"></a>
 ```
 /// Using method: void setTime12(int hour, bool _PM, int minute, int second);
 
@@ -166,6 +200,19 @@ RTC.setWeekday(1);    // Sets the weekday to 1, with the enum it's Monday
 RTC.setWeekday(_FRI); // Sets the weekday to Friday
 ```
 # Reading the Time
+Reading the time off of the MCP794xx RTC Module is done by time component; hour, minute, second. The values are then returned by the function and therefore must be stored in a variable. Let's go through reading each time component off of the RTC.
+### Reading the Hour
+
+
+
+int getHours();
+int getMinutes();
+int getSeconds();
+int getYear();
+int getMonth();
+int getDate();
+int getWeekday();
+
 # Reading the Calendar
 # MFP
 The Multifunction Pin (MFP) is an output pin which the MCP794xx Module uses as either a General Purpose Output (we set the output value manually), an Alarm Interrupt Output (the pin becomes Asserted when an alarm goes off), or as a Square Wave Clock Output (a small selection of output frequencies). While it can perform all of these tasks, it can be configured for **one** at any time.
