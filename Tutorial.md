@@ -425,6 +425,40 @@ RTC.setMFPin(1); // Sets the MFP pin to Vcc
 <a name="Alarms"></a>
 # Alarms
 ## Alarm Basics
-The alarm functionality of the MCP794xx series RTCs can be simple, or a bit more involved. The Kraztech MCP794xx module has two alarms. They can work separately, or in conjunction with each other for some more advanced functionality.
+The alarm functionality of the MCP794xx series RTCs can be simple, or a bit more involved. The Kraztech MCP794xx module has two alarms. They can work separately, or in conjunction with each other for some more advanced functionality. But before we start getting into the alarm setup, let's talk about output.
+
+#### Output
+The Alarm output is attached to the MFP pin on the RTC board. The output of that pin can either be *active-high* or *active-low*; defaulted to *active-low*.
+
+Here is what you would expect the output of the active low signal to look like:
+![alt text](https://www.kraztech.ca/media/github/ActiveLow.png "Active Low")
+
+![alt text](https://www.kraztech.ca/media/github/ActiveHigh.png "Active High")
+
+
+
+### Solo Alarm Use
+So let's start by looking at using just one alarm on the RTC. Now since we're deal with the output of the RTC, I'll include some images to show you what kind of output you would expect.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Storing Data
 # Reading Data
